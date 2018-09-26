@@ -1,0 +1,13 @@
+.imagencentro >img{
+	width:100%;
+}
+.imagencentro p{
+	text-align: center;
+}
+.form-horizontal .control-label {
+    text-align: left;
+}
+.resaltador{
+	color:red;
+}
+
