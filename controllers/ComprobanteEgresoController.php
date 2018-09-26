@@ -22,9 +22,7 @@ use yii\helpers\Url;
  */
 class ComprobanteEgresoController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
+   
       public function behaviors()
     {
         return [
