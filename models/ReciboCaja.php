@@ -25,6 +25,10 @@ class ReciboCaja extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+
+    public $comprobante;
+    public $ruta;
+
     public static function tableName()
     {
         return 'recibo_caja';
@@ -36,14 +40,22 @@ class ReciboCaja extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idrecibo', 'fecha', 'fecha_creacion', 'concepto', 'valor', 'idcentrocostos', 'adjunto'], 'required'],
+            [['idrecibo', 'fecha', 'fecha_creacion', 'concepto', 'valor', 'idcentrocostos'], 'required'],
             [['idrecibo', 'bloqueo', 'idcentrocostos', 'idanulo'], 'integer'],
+            [['idrecibo'], 'unique','on'=>'create'],
             [['fecha', 'fecha_creacion'], 'safe'],
             [['valor'], 'number'],
             [['concepto'], 'string', 'max' => 50],
             [['adjunto'], 'string', 'max' => 400],
             [['codigo'], 'string', 'max' => 5],
             [['idrecibo'], 'unique'],
+            [['comprobante'], 'required', 'on' =>'create'],
+            [['comprobante'],'file',//Error
+                                'maxSize' => 2048*1024*1, //1 MB
+                                'tooBig' => 'El tamaño máximo permitido es 2MB', //Error
+                                'extensions' => 'pdf, png, jpg',
+                                'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
+            ],
         ];
     }
 
@@ -69,6 +81,13 @@ class ReciboCaja extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+
+    public function getImageurl()
+    {
+        $ruta=Url::home(true);
+        return $ruta.$this->adjunto;
+    }
+
     public function getDetalleReciboCajas()
     {
         return $this->hasMany(DetalleReciboCaja::className(), ['idrecibocaja' => 'idrecibo']);

@@ -42,11 +42,12 @@ class TipoIngresoSearch extends TipoIngreso
     public function search($params)
     {
         $query = TipoIngreso::find();
-
+        $query->where('idanulo=0');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+
         ]);
 
         $this->load($params);

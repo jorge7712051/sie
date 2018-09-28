@@ -112,7 +112,7 @@ class SiteController extends Controller
             $session = Yii::$app->session;
             $session->set('centrocostos', $cc->centrocosto);
             $session->set('rol', $cc->role);
-            return $this->goBack();
+            return $this->redirect(['terceros/index']);
         }
 
         $model->password = '';

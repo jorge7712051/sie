@@ -42,6 +42,7 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
+            ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
             ['label' => 'Terceros', 'url' => ['/terceros/index']],
             ['label' => 'Adicionales',
@@ -51,9 +52,10 @@ if ($session->isActive){
                  ['label' => 'Ciudades', 'url' => ['/ciudades/index']],
                  ['label' => 'Conceptos', 'url' => ['/concepto/index']],
                  ['label' => 'Centro de costos', 'url' => ['/centro-costos/index']],
+                 ['label' => 'Tipos de Ingresos', 'url' => ['/tipo-ingreso/index']],
                         ],
              ],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
+            //['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
@@ -93,8 +95,9 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
+            ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
+            //['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Adcionales',
             'items' =>  [
                  ['label' => 'Teceros', 'url' => ['/terceros/index']],

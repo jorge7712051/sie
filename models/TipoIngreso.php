@@ -41,11 +41,40 @@ class TipoIngreso extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idtipo_ingreso' => 'Idtipo Ingreso',
-            'ingreso' => 'Ingreso',
+            'idtipo_ingreso' => 'ID Ingreso',
+            'ingreso' => 'Nombre Ingreso',
             'idanulo' => 'Idanulo',
         ];
     }
+
+     public static function buscarmodelo($id){
+        $ingreso= TipoIngreso::find()
+                ->Where(['in','idtipo_ingreso', ["idtipo_ingreso" => $id]]) 
+                ->all();
+
+        if($ingreso !== null)
+        {
+            TipoIngreso::updateAll(['idanulo' => 1], ['in','idtipo_ingreso', ["idtipo_ingreso" => $id]]);
+            return true;
+        }
+        return false;
+    }
+
+       public function beforeSave($insert)
+  {
+      if (parent::beforeSave($insert)) 
+      {
+        if($insert)
+        {
+          $this->ingreso = strtoupper($this->ingreso );        
+        }
+        else{
+          $this->ingreso = strtoupper($this->ingreso ); 
+        }
+        return true;
+      }
+      return false;  
+  }  
 
     /**
      * @return \yii\db\ActiveQuery

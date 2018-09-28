@@ -55,6 +55,22 @@ class Concepto extends \yii\db\ActiveRecord
         ];
     }
 
+       public function beforeSave($insert)
+    {
+      if (parent::beforeSave($insert)) 
+      {
+        if($insert)
+        {
+          $this->concepto = strtoupper($this->concepto );        
+        }
+        else{
+          $this->concepto = strtoupper($this->concepto ); 
+        }
+        return true;
+      }
+      return false;  
+    }  
+
     public static function buscarmodelo($id){
         $usuario= Concepto::find()
                 ->Where(['in','idconcepto', ["idconcepto" => $id]]) 

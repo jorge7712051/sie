@@ -2,17 +2,38 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\widgets\DatePicker;
+use kartik\number\NumberControl;
+use kartik\widgets\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\ReciboCaja */
 /* @var $form yii\widgets\ActiveForm */
 ?>
+<div class="row"> 
+    <div class="recibo-caja-form">
 
-<div class="recibo-caja-form">
+    <?php $form = ActiveForm::begin([
+       'method'=>'post',
+       'id'=>'formulario-comprobante-egreso',
+       'enableClientValidation'=>true,
+    ]); ?>
 
-    <?php $form = ActiveForm::begin(); ?>
-
+    <div class="col-xs-12 col-lg-6 ">
     <?= $form->field($model, 'idrecibo')->textInput(['maxlength' => true]) ?>
+
+      <?= $form->field($model, 'comprobante')->widget(FileInput::classname(), [
+                      'options' => ['accept' => 'image/*,application/pdf'],  
+                      'pluginOptions' => [
+                      'showUpload' => false,
+                    ],
+      ]); ?>
+
+    
+
+    </div>
+
+    <div class="col-xs-12 col-lg-6 ">
 
     <?= $form->field($model, 'fecha')->textInput() ?>
 
@@ -24,9 +45,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'bloqueo')->textInput() ?>
 
-    <?= $form->field($model, 'idcentrocostos')->textInput() ?>
-
-    <?= $form->field($model, 'adjunto')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'idcentrocostos')->textInput() ?>    
 
     <?= $form->field($model, 'idanulo')->textInput() ?>
 
@@ -35,7 +54,8 @@ use yii\widgets\ActiveForm;
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
-
+</div>
     <?php ActiveForm::end(); ?>
 
+</div>
 </div>
