@@ -23,7 +23,7 @@ use yii\helpers\Url;
 class ComprobanteEgresoController extends Controller
 {
    
-      public function behaviors()
+    public function behaviors()
     {
         return [
             'access' => [
@@ -70,7 +70,7 @@ class ComprobanteEgresoController extends Controller
                         $session = Yii::$app->session; 
                         $request = Yii::$app->request; 
                         $id = $request->get('id');  
-                          //Llamada al método que comprueba si es un usuario simple
+                         
                         return User::actualizarcomprobante($id,$session->get('centrocostos'));
                       },
                    ],

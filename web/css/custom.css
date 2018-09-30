@@ -10,4 +10,12 @@
 .resaltador{
 	color:red;
 }
+.table-hover > tbody > tr:hover {
+    background-color: #ffeeba !important;
+   
+}
+.celda-adjunto {
+    width: 25px !important;
+}
+
 

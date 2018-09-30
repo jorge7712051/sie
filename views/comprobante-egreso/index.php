@@ -23,14 +23,15 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?= GridView::widget([
+        'tableOptions' => [ 'class' => 'table table-sm table-hover table-bordered table-striped'],
+        
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
 
             'idcomprobante',
-            'fecha',
-            'bloqueo',
+            'fecha',             
             [
                 'attribute'=>'idcentrocostos',
                 'value'=>function($model){
@@ -40,9 +41,47 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter'=> ArrayHelper::map(CentroCostos::find()->all(),'idcentrocostos','centrocostos'),
 
             ],
-            'valor',
+            [
+                'attribute'=>'valor',
+                'value'=>function($model){  
+                        Yii::$app->formatter->locale = 'et-EE';                 
+                    return Yii::$app->formatter->asCurrency($model->valor,'USD'); 
+                }              
+            ],
+            [
+                'attribute'=>'bloqueo',
+                'value'=>function($model){
+                    if ($model->bloqueo==0) {
+                       return 'Sin Bloqueo';
+                    }
+                    return 'Bloqueado';
+                },
+                 'filter'=>array("1"=>"Bloqueado","0"=>"Sin BLouqeo"),
+            ],
+            [
+                'attribute'=>'alta',
+                'value'=>function($model){
+                     if ($model->alta==0) {
+                       return 'Sin aceptar';
+                    }
+                    return 'Aceptado';
+                },
+                 'filter'=>array("1"=>"Acpetado","0"=>"Sin Aceptar"),
+            ],
+            [
+                'attribute'=>'anulado',
+                'value'=>function($model){
+                     if ($model->anulado==0) {
+                       return 'Sin Anular';
+                    }
+                    return 'Anulado';
+                },
+                 'filter'=>array("1"=>"Anulado","0"=>"Sin Anular"),
+            ],
+
               array(
                 'attribute'=>'adjunto',
+                'contentOptions' => ['class' => 'celda-adjunto'],
                 'format' => 'raw',
                 'value'=>function($model){
           return Html::a(Html::img($model->getImagenDocumento(), ['alt'=>'archivos','width'=>'50px']) , $model->getImageurl(),['target'=>'_blank'] );

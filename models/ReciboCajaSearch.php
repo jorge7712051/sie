@@ -41,8 +41,25 @@ class ReciboCajaSearch extends ReciboCaja
      * @return ActiveDataProvider
      */
     public function search($params)
-    {
-        $query = ReciboCaja::find();
+    {   
+        $session = Yii::$app->session;
+        if ($session->isActive)
+        {
+            if($session->get('rol')==1)
+            {
+                $query = ReciboCaja::find();
+                $query->where('idanulo=0'); 
+                $query->orderBy(['fecha' => SORT_ASC]) ;
+
+            }
+            else{
+                $query = ReciboCaja::find();
+                $query->where('idanulo=0');
+                $query->andWhere('idcentrocostos='.$session->get('centrocostos'));
+                $query->orderBy(['fecha' => SORT_ASC]) ;
+
+            }
+        }
 
         // add conditions that should always apply here
 

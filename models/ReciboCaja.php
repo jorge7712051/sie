@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use yii\helpers\Url;
 /**
  * This is the model class for table "recibo_caja".
  *
@@ -40,9 +40,12 @@ class ReciboCaja extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idrecibo', 'fecha', 'fecha_creacion', 'concepto', 'valor', 'idcentrocostos'], 'required'],
+            [['idrecibo', 'fecha',  'concepto', 'valor', 'idcentrocostos'], 'required'],
             [['idrecibo', 'bloqueo', 'idcentrocostos', 'idanulo'], 'integer'],
-            [['idrecibo'], 'unique','on'=>'create'],
+            [['idrecibo'], 'unique','on'=>'create'],         
+            [['comprobante'], 'required', 'on' =>'create'],
+            [['fecha'], 'validar_fecha', 'on' => 'update'],
+            [['idrecibo'], 'validar_id', 'on'=>'update'],
             [['fecha', 'fecha_creacion'], 'safe'],
             [['valor'], 'number'],
             [['concepto'], 'string', 'max' => 50],
@@ -56,6 +59,8 @@ class ReciboCaja extends \yii\db\ActiveRecord
                                 'extensions' => 'pdf, png, jpg',
                                 'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
             ],
+             [['idrecibo'], 'match','pattern'=>"/^[0-9]{4}$/",'message' => 'Numero de recibo de caja invalido '],
+             [['idcentrocostos'], 'exist', 'skipOnError' => true, 'targetClass' => CentroCostos::className(), 'targetAttribute' => ['idcentrocostos' => 'idcentrocostos']],
         ];
     }
 
@@ -82,10 +87,79 @@ class ReciboCaja extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
 
+    public function validar_fecha($attribute, $params)
+    {
+        $request = Yii::$app->request; 
+        $model = ComprobanteEgreso::findOne($request->get('id'));
+        $fecha1=explode("-", $model->fecha);
+        $fecha2=explode("-", $this->fecha);
+        $a =$fecha1[0]."-".$fecha1[1];              
+        $b =$fecha2[0]."-".$fecha2[1]; 
+         if($a==$b)
+        {
+            return true;
+        }
+        $this->addError($attribute, "Fecha inconsistente");
+    }
+
+    public function beforeSave($insert)
+    {
+        if(parent::beforeSave($insert))
+        {
+            if($insert)
+        {
+            $this->fecha_creacion = new \yii\db\Expression('NOW()');         
+        }
+        
+        return true;
+        }
+        return false;
+    }
+
     public function getImageurl()
     {
         $ruta=Url::home(true);
         return $ruta.$this->adjunto;
+    }
+
+    public function upload()
+    {
+        if ($this->validate()) {
+            $this->comprobante->saveAs('archivos/' . $this->ruta . '.' . $this->comprobante->extension);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getImagenDocumento()
+    {
+        $ruta=Url::home(true);
+        return $ruta."archivos/carpeta_archivos.png";
+    }
+  
+    public static function Seguridadfecha($hoy)
+    {
+        $request = Yii::$app->request; 
+        $model = ComprobanteEgreso::findOne($request->get('id'));
+        $fecha1=explode("-", $model->fecha);       
+        $a =$fecha1[0]."-".$fecha1[1];      
+         if($a==$hoy)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public function validar_id($attribute, $params)
+    {
+        $request = Yii::$app->request; 
+        $id = $request->get('id');  
+        if($this->idrecibo == $id)
+        {
+            return true;
+        }
+        $this->addError($attribute, "El numero no coincide");
     }
 
     public function getDetalleReciboCajas()

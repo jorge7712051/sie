@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\ReciboCaja */
 
-$this->title = 'Create Recibo Caja';
+$this->title = 'Crear Recibo Caja';
 $this->params['breadcrumbs'][] = ['label' => 'Recibo Cajas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

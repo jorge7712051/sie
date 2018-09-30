@@ -22,7 +22,7 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
     {
         return [
             [['idcomprobante', 'bloqueo', 'idcentrocostos', 'idanulo'], 'integer'],
-            [['fecha_creacion', 'fecha', 'adjunto', 'codigo'], 'safe'],
+            [['fecha_creacion', 'fecha', 'adjunto', 'codigo','alta','anulado'], 'safe'],
             [['valor'], 'number'],
         ];
     }
@@ -84,8 +84,10 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
             'fecha' => $this->fecha,
             'bloqueo' => $this->bloqueo,
             'valor' => $this->valor,
+            'alta' => $this->alta,
             'idcentrocostos' => $this->idcentrocostos,
             'idanulo' => $this->idanulo,
+            'anulado' => $this->anulado,
         ]);
 
         $query->andFilterWhere(['like', 'adjunto', $this->adjunto])

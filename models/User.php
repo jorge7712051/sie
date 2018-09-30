@@ -141,7 +141,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public static function actualizarcomprobante($id,$cc)
     {
        $hoy = date("Y-m"); 
-       if (ComprobanteEgreso::findOne(['idcomprobante'=>$id,'idcentrocostos'=>$cc]))
+       if (ComprobanteEgreso::findOne(['idcomprobante'=>$id,'idcentrocostos'=>$cc,'bloqueo'=>'0']))
        {
         if(ComprobanteEgreso::Seguridadfecha($hoy))
         {
