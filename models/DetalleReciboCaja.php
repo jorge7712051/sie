@@ -23,6 +23,11 @@ class DetalleReciboCaja extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $cedulatercero = '';
+    public $nombre = '';
+    public $contraparte = '';
+     public $doble;
+
     public static function tableName()
     {
         return 'detalle_recibo_caja';
@@ -34,9 +39,10 @@ class DetalleReciboCaja extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idtercero', 'valor', 'idtipoingreso', 'idrecibocaja', 'fechacreacion'], 'required'],
+            [['idtercero', 'valor', 'idtipoingreso','contraparte'], 'required'],
             [['idtercero', 'idtipoingreso', 'idrecibocaja'], 'integer'],
             [['valor'], 'number'],
+            [['doble'],'boolean'],
             [['fechacreacion'], 'safe'],
             [['idtipoingreso'], 'exist', 'skipOnError' => true, 'targetClass' => TipoIngreso::className(), 'targetAttribute' => ['idtipoingreso' => 'idtipo_ingreso']],
             [['idtercero'], 'exist', 'skipOnError' => true, 'targetClass' => Terceros::className(), 'targetAttribute' => ['idtercero' => 'idtercero']],
@@ -51,12 +57,114 @@ class DetalleReciboCaja extends \yii\db\ActiveRecord
     {
         return [
             'iddetalle_recibo' => 'Iddetalle Recibo',
-            'idtercero' => 'Idtercero',
+            'idtercero' => 'Nombre Tercero',
             'valor' => 'Valor',
-            'idtipoingreso' => 'Idtipoingreso',
+            'idtipoingreso' => 'Tipo de Ingreso',
             'idrecibocaja' => 'Idrecibocaja',
             'fechacreacion' => 'Fechacreacion',
+            'cedulatercero'=> 'Nombre Tercero',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if(parent::beforeSave($insert))
+        {
+            if($insert)
+        {
+            $request = Yii::$app->request; 
+            $idcom = $request->get('id');  
+            $this->idrecibocaja= base64_decode($idcom);
+            $this->fechacreacion = new \yii\db\Expression('NOW()');         
+        }
+        
+        return true;
+        }
+        return false;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+    
+        if($insert)
+        {
+            $model= new Bancos();
+            $modelo= new Caja();
+            if($this->contraparte==1 && $this->doble==0)
+            {
+                $model->valor_ingreso=$this->valor;
+                $model->idcaja=$this->iddetalle_recibo;
+                $model->save();
+            }
+            if($this->contraparte==2 && $this->doble==0)
+            {
+                $modelo->valor_ingreso=$this->valor;
+                $modelo->idcaja=$this->iddetalle_recibo;
+                $modelo->save();
+            }
+            if($this->contraparte==1 && $this->doble==1)
+            {
+                $model->valor_ingreso=$this->valor;
+                $model->idcaja=$this->iddetalle_recibo;
+                $model->save();
+                $modelo->valor_egreso=$this->valor;
+                $modelo->idcaja=$this->iddetalle_recibo;
+                $modelo->save();
+            }
+            if($this->contraparte==2 && $this->doble==1)
+            {
+                $model->valor_egreso=$this->valor;
+                $model->idcaja=$this->iddetalle_recibo;
+                $model->save();
+                $modelo->valor_ingreso=$this->valor;
+                $modelo->idcaja=$this->iddetalle_recibo;
+                $modelo->save();
+            } 
+            return true;       
+        }
+        else
+        {
+            $model= new Bancos();
+            $modelo= new Caja();
+            Bancos::deleteAll("idcaja=:id", [":id" => $this->iddetalle_recibo]);
+            Caja::deleteAll("idcaja=:id", [":id" => $this->iddetalle_recibo]);
+            
+            if($this->contraparte==1 && $this->doble==0)
+            {
+                $model->valor_ingreso=$this->valor;
+                $model->idcomprobante=$this->iddetalle_recibo;
+                $model->save();
+            }
+            if($this->contraparte==2 && $this->doble==0)
+            {
+                $modelo->valor_ingreso=$this->valor;
+                $modelo->idcomprobante=$this->iddetalle_recibo;
+                $modelo->save();
+            }
+            if($this->contraparte==1 && $this->doble==1)
+            {
+                $model->valor_ingreso=$this->valor;
+                $model->idcomprobante=$this->iddetalle_recibo;
+                $model->save();
+                $modelo->valor_egreso=$this->valor;
+                $modelo->idcomprobante=$this->iddetalle_recibo;
+                $modelo->save();
+            }
+            if($this->contraparte==2 && $this->doble==1)
+            {
+                $model->valor_egreso=$this->valor;
+                $model->idcomprobante=$this->iddetalle_recibo;
+                $model->save();
+                $modelo->valor_ingreso=$this->valor;
+                $modelo->idcomprobante=$this->iddetalle_recibo;
+                $modelo->save();
+            } 
+            return true;    
+             
+        }
+        
+   
+        return false;
     }
 
     /**

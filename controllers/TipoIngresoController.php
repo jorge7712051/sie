@@ -27,7 +27,7 @@ class TipoIngresoController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['concepto-porcentaje'],
+                        'actions' => ['ingreso-doble'],
                         'roles' => ['@'],
                     ],
                     [
@@ -114,6 +114,18 @@ class TipoIngresoController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionIngresoDoble($q = null)
+    {
+        $request = Yii::$app->request; 
+        $id = $request->post('id');  
+        $out = [];
+        $out = TipoIngreso::find()
+        ->where('idtipo_ingreso='.$id)
+        ->asArray()
+        ->all();
+        return \yii\helpers\Json::encode($out);
     }
 
     /**

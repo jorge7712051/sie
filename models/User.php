@@ -2,6 +2,8 @@
 
 namespace app\models;
 use app\models\ComprobanteEgreso;
+use app\models\ReciboCaja;
+
 use Yii;
 
 class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
@@ -144,6 +146,22 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
        if (ComprobanteEgreso::findOne(['idcomprobante'=>$id,'idcentrocostos'=>$cc,'bloqueo'=>'0']))
        {
         if(ComprobanteEgreso::Seguridadfecha($hoy))
+        {
+            return true;   
+        }
+       
+       } 
+       else {
+            return false;
+       }
+    }
+
+    public static function actualizarrecibocaja($id,$cc)
+    {
+       $hoy = date("Y-m"); 
+       if (ReciboCaja::findOne(['idrecibo'=>$id,'idcentrocostos'=>$cc,'bloqueo'=>'0']))
+       {
+        if(ReciboCaja::Seguridadfecha($hoy))
         {
             return true;   
         }

@@ -56,6 +56,7 @@ function terceros(b=null){
 $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
 
 	 $('#detallescomprobanteegreso-idtercero').val(suggestion.idtercero);
+   $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
 	 if(suggestion.razon_social!="")
 	 {
 	 	$('#detallescomprobanteegreso-nombre').val(suggestion.razon_social);
@@ -65,6 +66,23 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 	 	var nombre=suggestion.nombre+" "+suggestion.apellido;
 	 	$('#detallescomprobanteegreso-nombre').val(nombre);
 	 }	
+   
+});
+
+
+$('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
+
+ 
+   $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
+   if(suggestion.razon_social!="")
+   {
+    $('#detallescomprobanteegreso-nombre').val(suggestion.razon_social);
+   }
+   else
+   {
+    var nombre=suggestion.nombre+" "+suggestion.apellido;
+    $('#detallescomprobanteegreso-nombre').val(nombre);
+   }  
    
 });
 $('#detallescomprobanteegreso-idconcepto').on('change', function() {
@@ -83,6 +101,22 @@ $('#detallescomprobanteegreso-idconcepto').on('change', function() {
 			});
     	}
 	});
+});
+
+$('#detallerecibocaja-idtipoingreso').on('change', function() {
+  var idconcepto=this.value;
+  $.ajax({
+      type: "POST",
+      url:"../tipo-ingreso/ingreso-doble",
+      data: {id:idconcepto},
+      dataType : 'json',
+      success : function(data) {
+          $.each(data, function(indice, valor) {
+            $('#detallerecibocaja-doble').val(data[indice]['doble']);
+          
+      });
+      }
+  });
 });
 	
 $('#detallescomprobanteegreso-valor-disp').on('blur', function() {

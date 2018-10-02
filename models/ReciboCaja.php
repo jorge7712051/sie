@@ -87,10 +87,21 @@ class ReciboCaja extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
 
+
+    public static function getTotal($provider, $columnName)
+    {
+    $total = 0;
+    foreach ($provider as $item) {
+      $total += $item[$columnName];
+    }
+    Yii::$app->formatter->locale = 'et-EE';                 
+                
+    return Yii::$app->formatter->asCurrency($total ,'USD'); 
+    } 
     public function validar_fecha($attribute, $params)
     {
         $request = Yii::$app->request; 
-        $model = ComprobanteEgreso::findOne($request->get('id'));
+        $model = ReciboCaja::findOne($request->get('id'));
         $fecha1=explode("-", $model->fecha);
         $fecha2=explode("-", $this->fecha);
         $a =$fecha1[0]."-".$fecha1[1];              
@@ -141,7 +152,7 @@ class ReciboCaja extends \yii\db\ActiveRecord
     public static function Seguridadfecha($hoy)
     {
         $request = Yii::$app->request; 
-        $model = ComprobanteEgreso::findOne($request->get('id'));
+        $model = ReciboCaja::findOne($request->get('id'));
         $fecha1=explode("-", $model->fecha);       
         $a =$fecha1[0]."-".$fecha1[1];      
          if($a==$hoy)

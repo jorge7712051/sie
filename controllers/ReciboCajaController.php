@@ -14,6 +14,7 @@ use yii\web\UploadedFile;
 use yii\web\Response;
 use yii\filters\AccessControl;
 use app\models\User;
+use app\models\DetalleReciboCajaSearch;
 /**
  * ReciboCajaController implements the CRUD actions for ReciboCaja model.
  */
@@ -70,7 +71,7 @@ class ReciboCajaController extends Controller
                         $request = Yii::$app->request; 
                         $id = $request->get('id');  
                           //Llamada al método que comprueba si es un usuario simple
-                        return User::actualizarcomprobante($id,$session->get('centrocostos'));
+                        return User::actualizarrecibocaja($id,$session->get('centrocostos'));
                       },
                    ],
                 ],
@@ -108,6 +109,12 @@ class ReciboCajaController extends Controller
      */
     public function actionView($id)
     {
+        $searchModel = new DetalleRecibocajaSearch();
+        $dataProvider = $searchModel->searchespecifico($id);
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+            'dataProvider' => $dataProvider,
+        ]);
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -165,14 +172,53 @@ class ReciboCajaController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->scenario = 'update';
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idrecibo]);
+        if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
+        {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
         }
+        if ($model->load(Yii::$app->request->post()))
+        {
+            $directorio= $model->adjunto  ;               
+            $model->comprobante = UploadedFile::getInstance($model, 'comprobante');
+            if(!empty($model->comprobante))
+            {
+                $model->ruta=$this->generarnombre();
+                $model->adjunto="archivos/".$model->ruta.".".$model->comprobante->extension;
+                $model->save(); 
+                if ($model->upload())
+                 { 
+                    unlink($directorio);
+                   return $this->redirect(['view', 'id' => $model->idrecibo]);
+                 }                  
+            }
+            $model->save(); 
+            return $this->redirect(['view', 'id' => $model->idrecibo]);           
+        }         
 
         return $this->render('update', [
             'model' => $model,
         ]);
+    }
+
+    public function actionAlta($id)
+    {   
+        $model = $this->findModel($id);
+        $model->alta=1;
+        $model->save();
+        $mensaje='<div class="alert alert-success" role="alert"><h4 class="alert-heading">¡BIEN HECHO!</h4><p>Loa valores coinciden el recibo de caja sera tenido en cuenta para el informe mensual, por favor no cambies o adiciones mas datos.</p><hr><p class="mb-0">Comprobante  tenido en cuenta .</p></div>'; 
+        return $mensaje;
+    }
+
+    public function actionBaja($id)
+    {
+       $model = $this->findModel($id);
+        $model->alta=0;
+        $model->save();
+        $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p>Los valores del recibo de caja y la suma de los valores de los adjuntos no coinciden o no son iguales, para que el recibo de caja sea tenido en cuenta, pueda subir al sistema y se vea reflejado en el informe mensual ajuste los valores hasta que sean iguales.</p><hr><p class="mb-0">Comprobante no tenido en cuenta .</p></div>'; 
+        return $mensaje;
     }
 
     /**

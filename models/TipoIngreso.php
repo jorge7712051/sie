@@ -30,6 +30,7 @@ class TipoIngreso extends \yii\db\ActiveRecord
     {
         return [
             [['ingreso'], 'required'],
+            [['doble'],'boolean'],
             [['idanulo'], 'integer'],
             [['ingreso'], 'string', 'max' => 50],
         ];
@@ -44,6 +45,7 @@ class TipoIngreso extends \yii\db\ActiveRecord
             'idtipo_ingreso' => 'ID Ingreso',
             'ingreso' => 'Nombre Ingreso',
             'idanulo' => 'Idanulo',
+            'doble'=>'Habilitación doble',
         ];
     }
 

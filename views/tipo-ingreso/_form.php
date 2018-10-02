@@ -14,6 +14,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'ingreso')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'doble')->checkbox(array('label'=>'Habilitación doble') );?>
    
     <div class="form-group">
         <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>

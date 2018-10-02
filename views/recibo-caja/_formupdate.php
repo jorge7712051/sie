@@ -23,7 +23,7 @@ use yii\helpers\Url;
     ]); ?>
 
     <div class="col-xs-12 col-lg-6 ">
-    <?= $form->field($model, 'idrecibo',['enableAjaxValidation' => true])->textInput(['maxlength' => true,'autocomplete'=>"off"]) ?>
+    <?= $form->field($model, 'idrecibo',['enableAjaxValidation' => true])->textInput(['maxlength' => true,'autocomplete'=>"off",'disabled'=>true]) ?>
 
     <?php    $session = Yii::$app->session;
     if ($session->isActive){
@@ -36,12 +36,17 @@ use yii\helpers\Url;
             <?php }
         } ?>
 
-    <?= $form->field($model, 'comprobante')->widget(FileInput::classname(), [
-                      'options' => ['accept' => 'image/*,application/pdf'],  
-                      'pluginOptions' => [
-                      'showUpload' => false,
-                    ],
-    ]); ?>
+    <?php $carga= '<embed class="kv-preview-data file-preview-pdf" src="'.Url::home(true).$model->adjunto.'" style="width:100%;height:160px;">'; ?>
+    <?= $form->field($model, 'comprobante',['enableAjaxValidation' => true])->widget(FileInput::classname(), [
+                                'options' => ['accept' => 'image/*,application/pdf'],
+                                'pluginOptions' => [
+                                        'showUpload' => false,
+                                        'initialPreview'=>[ $carga,],
+                                        'overwriteInitial'=>true,
+                                        'accept' => 'image/*'
+                                        ],
+                                ]); ?>
+
 
 
 
@@ -79,7 +84,7 @@ use yii\helpers\Url;
   
 
 <div class="form-group">
-        <?= Html::submitButton('Crear', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('GUardar', ['class' => 'btn btn-success']) ?>
     </div>
 </div>
     <?php ActiveForm::end(); ?>
