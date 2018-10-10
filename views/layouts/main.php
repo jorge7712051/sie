@@ -42,9 +42,17 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
+            ['label' => 'Informe', 'url' => ['/informes/index']],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
-            ['label' => 'Terceros', 'url' => ['/terceros/index']],
+            ['label' => 'Terceros',
+            'items'=>[
+                ['label' => 'Pastores', 'url' => ['/pastores/index']],
+                ['label' => 'Terceros', 'url' => ['/terceros/index']],
+                ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
+                    ],
+            ],
+            
             ['label' => 'Adicionales',
              'items' => [
                  ['label' => 'Usuarios', 'url' => ['/usuarios/index']],
@@ -95,12 +103,14 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
+            ['label' => 'Informe', 'url' => ['/informes/index']],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
             //['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Adcionales',
             'items' =>  [
-                 ['label' => 'Teceros', 'url' => ['/terceros/index']],
+                ['label' => 'Teceros', 'url' => ['/terceros/index']],
+                ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
                         ],
              ],
             Yii::$app->user->isGuest ? (

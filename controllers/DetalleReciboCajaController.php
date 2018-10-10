@@ -153,7 +153,7 @@ class DetalleReciboCajaController extends Controller
         $model->cedulatercero=$this->gettercero( $model->idtercero);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->iddetalle_recibo]);
+            return $this->redirect(['recibo-caja/view','id' => $model->idrecibocaja]);
         }
 
         return $this->render('update', [

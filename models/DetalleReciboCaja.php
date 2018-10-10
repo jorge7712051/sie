@@ -132,22 +132,22 @@ class DetalleReciboCaja extends \yii\db\ActiveRecord
             if($this->contraparte==1 && $this->doble==0)
             {
                 $model->valor_ingreso=$this->valor;
-                $model->idcomprobante=$this->iddetalle_recibo;
+                $model->idcaja=$this->iddetalle_recibo;
                 $model->save();
             }
             if($this->contraparte==2 && $this->doble==0)
             {
                 $modelo->valor_ingreso=$this->valor;
-                $modelo->idcomprobante=$this->iddetalle_recibo;
+                $modelo->idcaja=$this->iddetalle_recibo;
                 $modelo->save();
             }
             if($this->contraparte==1 && $this->doble==1)
             {
                 $model->valor_ingreso=$this->valor;
-                $model->idcomprobante=$this->iddetalle_recibo;
+                $model->idcaja=$this->iddetalle_recibo;
                 $model->save();
                 $modelo->valor_egreso=$this->valor;
-                $modelo->idcomprobante=$this->iddetalle_recibo;
+                $modelo->idcaja=$this->iddetalle_recibo;
                 $modelo->save();
             }
             if($this->contraparte==2 && $this->doble==1)
