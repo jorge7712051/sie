@@ -42,6 +42,15 @@ class DiezmoPastoresSearch extends DiezmoPastores
     public function search($params)
     {
         $query = DiezmoPastores::find();
+        $session = Yii::$app->session;
+        if ($session->isActive)
+        {
+                $query = DiezmoPastores::find()
+                ->select('diezmo_pastores.*')
+                ->innerJoin('pastores', '`pastores`.`cedula` = `diezmo_pastores`.`idpastor`')
+                ->where(['pastores.centro_costo' => $session->get('centrocostos')]);
+           
+        }
 
         // add conditions that should always apply here
 

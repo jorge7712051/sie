@@ -104,7 +104,7 @@ if ($model->load(Yii::$app->request->post()))
 {
     if($model->validate())
     {
-        $nombre=$this->getcentrocostos($model->centro_costos);
+    $nombre=$this->getcentrocostos($model->centro_costos);
     $datos['diezmo']=$this->ingresoscaja($model->fecha,'recibo_caja_caja',$model->centro_costos,'1');
     $datos['diezmobanco']=$this->ingresoscaja($model->fecha,'recibo_caja_banco',$model->centro_costos,'1');
    $datos['ofrenda']=$this->ingresoscaja($model->fecha,'recibo_caja_caja',$model->centro_costos,'2');
@@ -130,111 +130,169 @@ if ($model->load(Yii::$app->request->post()))
     $datos['egresobanco']+=$datos['egresobancocom'];
     $datos['cajafinal']=$datos['cajadisponible']-$datos['egresocaja'];
     $datos['bancofinal']=$datos['bancodisponible']-$datos['egresobanco'];
-                $content="<div class='row'>
-    <div class='col-xs-12'>
-    <h3>INFORME MENSUAL DE TESORERIA IGLESIA EVANGELICA DISPULOS DE CRISTO</h3>
+    $datos['diezmo']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'4')+
+    $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'4');
+    $datos['cuatro']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'5')+
+    $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'5');
+    $datos['bonos']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'6')+
+    $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'6');
+    $datos['totalmision']= $datos['cuatro']+ $datos['bonos']+$datos['diezmo'];
+    $datos['egresocaja']-=$datos['totalmision'];
+    $datos['egresostotales']=$datos['totalmision']+$datos['egresocaja'];
+    $content="
+    <div class='row'>
+        <div class='col-xs-12'>
+            <h3>INFORME MENSUAL DE TESORERIA IGLESIA EVANGELICA DISPULOS DE CRISTO</h3>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-4'>
-    <span>CONGREGACION</span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span>CONGREGACION</span>
+        </div>
+        <div class='col-xs-4'>
+            <span>".$nombre."</span>
+        </div>
+        <div class='col-xs-4'>
+            <span><strong>FECHA: </strong></span>
+            <span >$model->fecha </span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-        <span>".$nombre."</span>
+    <div class='row'>
+        <div class='col-xs-12'>
+            <h5><strong>MOVIMIENTO CAJA<strong></h5>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span><strong>FECHA:</strong></span>
-    <span >$model->fecha </span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span><strong>1.</strong> INGRESO DIEZMOS EN CAJA</span>
+        </div>
+        <div class='col-xs-4 borde-abajo'>
+        <span>$ ".$datos['diezmo']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-12'>
-    <h5><strong>MOVIMIENTO CAJA<strong></h5>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span><strong>2.</strong> INGRESO OFRENDAS EN CAJA</span>
+        </div>
+        <div class='col-xs-4 borde-abajo'>
+            <span >$ ". $datos['ofrenda']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8'>
-    <span><strong>1.</strong> INGRESO DIEZMOS EN CAJA</span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span><strong>3.</strong> OTROS OFRENDAS EN CAJA</span>
+        </div>
+        <div class='col-xs-4  borde-abajo'>
+            <span>$ ".$datos['otros']."</span>
+        </div> 
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['diezmo']."</span>
+    <div class='row'>
+        <div class='col-xs-4 centro'>
+            <span><strong>TOTAL INGRESO EN CAJA</strong></span>
+        </div>
+        <div class='col-xs-offset-4  col-xs-4 borde-abajo'>
+            <span>$ ".$totalcaja."</span>
+        </div>
     </div>
-    <div class='col-xs-8'>
-    <span><strong>2.</strong> INGRESO OFRENDAS EN CAJA</span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span><strong>4.</strong> SALDO ANTERIOR EN CAJA </span>
+        </div>
+        <div class='col-xs-4 borde-abajo'>
+            <span>$ ".$datos['cajamesant']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$  ". $datos['ofrenda']."</span>
+    <div class='row'>
+        <div class='col-xs-4 centro'>
+            <span ><strong>TOTAL DISPONIBLE EN CAJA</strong></span>
+        </div>
+        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+            <span >$ ".$datos['cajadisponible']."</span>
+        </div>
     </div>
-    <div class='col-xs-8'>
-    <span><strong>3.</strong> OTROS OFRENDAS EN CAJA</span>
+    <div class='row'>
+        <div class='col-xs-4 centro'>
+            <span ><strong>5. TOTAL GASTO DE CAJA</strong></span>
+        </div>
+        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+            <span>$ -".$datos['egresocaja']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['otros']."</span>
-    </div> 
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL INGRESO EN CAJA</strong></span>
+    <div class='row'>
+        <div class='col-xs-4 centro'>
+            <span ><strong>ENVIADO A LA MISION</strong></span>
+        </div>
+        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+            <span>$ -".$datos['totalmision']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$totalcaja."</span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span ><strong>6.</strong> DIEZMO</span>
+        </div>
+        <div class='col-xs-4 borde-abajo '>
+            <span>$ ".$datos['diezmo']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8'>
-    <span><strong>4.</strong> SALDO ANTERIOR EN CAJA </span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span ><strong>7.</strong> 4% ENIVIADO A LA MISION</span>
+        </div>
+        <div class='col-xs-4 borde-abajo '>
+            <span>$ ".$datos['cuatro']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['cajamesant']."</span>
+    <div class='row'>
+        <div class='col-xs-4'>
+            <span ><strong>8.</strong> OFRENDAS (BONOS-OTROS)</span>
+        </div>
+        <div class='col-xs-4 borde-abajo '>
+            <span>$ ".$datos['bonos']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL DISPONIBLE EN CAJA</strong></span>
+    <div class='row'>
+        <div class='col-xs-8'>
+            <span ><strong>TOTAL GENERAL DE EGRESOSO DE CAJA (Total de gastos + total enviado a la misión)</strong></span>
+        </div>
+        <div class='col-xs-4 borde-abajo '>
+            <span>$ -".$datos['egresostotales']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['cajadisponible']."</span>
+    <div class='row'>
+        <div class='col-xs-8 centro'>
+            <span ><strong>SALDO FINAL EN CAJA</strong></span>
+        </div>
+        <div class='col-xs-4 borde-abajo '>
+            <span><strong>$ ".$datos['cajafinal']."</strong></span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL GASTO EN CAJA</strong></span>
-    </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ -".$datos['egresocaja']."</span>
-    </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>SALDO FINAL EN CAJA</strong></span>
-    </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'><strong>$ ".$datos['cajafinal']."</strong></span>
-    </div>
-</div>
 <div class='row'>
     <div class='col-xs-12'>
     <h5><strong>MOVIMIENTO BANCOS<strong></h5>
     </div>
 </div>
 <div class='row'>
-    <div class='col-xs-8'>
-    <span><strong>1.</strong> INGRESO DIEZMOS EN BANCOS</span>
-    </div>
     <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['diezmobanco']."</span>
+        <span><strong>1.</strong> INGRESO DIEZMOS EN BANCOS</span>
     </div>
-    <div class='col-xs-8'>
-    <span><strong>2.</strong> INGRESO OFRENDAS EN BANCOS</span>
+    <div class='col-xs-4 borde-abajo '>
+        <span>$ ".$datos['diezmobanco']."</span>
     </div>
+</div>
+<div class='row'>
     <div class='col-xs-4'>
-    <span class='decoracion'>$  ". $datos['ofrendabanco']."</span>
+        <span><strong>2.</strong> INGRESO OFRENDAS EN BANCOS</span>
     </div>
-    <div class='col-xs-8'>
+    <div class='col-xs-4 borde-abajo'>
+        <span >$  ". $datos['ofrendabanco']."</span>
+    </div>
+</div>
+<div class='row'>
+    <div class='col-xs-4'>
     <span><strong>3.</strong> OTROS OFRENDAS EN BANCOS</span>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['otrosbanco']."</span>
+    <div class='col-xs-4 borde-abajo'>
+    <span >$ ".$datos['otrosbanco']."</span>
     </div> 
 </div>
 <div class='row'>
@@ -242,7 +300,7 @@ if ($model->load(Yii::$app->request->post()))
     <span ><strong>TOTAL INGRESO EN BANCOS</strong></span>
     </div>
     <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$totalbanco."</span>
+    <span >$ ".$totalbanco."</span>
     </div>
 </div>
 <div class='row'>
@@ -286,54 +344,33 @@ if ($model->load(Yii::$app->request->post()))
 
    public function generarpdf($content)
 {
-     $pdf = new Pdf([
-   // set to use core fonts only
-   'mode' => Pdf::MODE_BLANK,
-   'filename' => 'reporte_' . date('d-m-Y_his') . '.pdf',
-   // A4 paper format
-   'format' => Pdf::FORMAT_A4,
-   // portrait orientation
-   'orientation' => Pdf::ORIENT_PORTRAIT,
-   // stream to browser inline
-   'destination' => Pdf::DEST_DOWNLOAD  ,   
-   // your html content input
-   'content' => $content,
-   // format content from your own css file if needed or use the
-   // enhanced bootstrap css built by Krajee for mPDF formatting
-   //'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
-   // any css to be embedded if required
-   'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
-   'cssInline' => '.kv-heading-1{font-size:10px} h3,h5{ text-align: center; }
-
-    .decoracion{ text-decoration: underline;       
+    $pdf = new Pdf([
+    'mode' => Pdf::MODE_BLANK,
+    'filename' => 'reporte_' . date('d-m-Y_his') . '.pdf',
+    'format' => Pdf::FORMAT_A4,
+    'orientation' => Pdf::ORIENT_PORTRAIT,
+    'destination' => Pdf::DEST_DOWNLOAD  ,   
+    'content' => $content,
+    'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+    'cssInline' => '.kv-heading-1{font-size:10px} h3,h5{ text-align: center; }
+    .decoracion{ text-decoration: underline;}
+    h5{background: #cce5ff;padding: 5px;}
+    .col-xs-4 { width: 33.33333333%; }
+    .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
+        float: left;
     }
-    h5{    background: #cce5ff;
-    padding: 5px;}
-    .col-xs-4 {
-    width: 33.33333333%;   
-   
-}
-.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
-    float: left;
-}
-span{
-    font-size:13px;
-}
-.centro
-{
-    text-align: center;
-}
-.col-xs-8 {
-    width: 66.66666667%;
-}',
-   // set mPDF properties on the fly
-   'options' => ['title' => 'Krajee Report Title',                
+    .borde-abajo{ border-bottom: 1px solid black;}
+    span{font-size:13px;}
+    .row{margin-bottom: 8px;}
+    .centro{ text-align: center;}
+    .col-xs-offset-4 { margin-left: 33.33333333%;}
+    .col-xs-8 {width: 66.66666667%;}',
+    'options' => ['title' => 'Krajee Report Title',                
                 'SetWatermarkImage'=>'../web/img/logo.png',
                 'showWatermarkText' => true,
-    'showWatermarkImage' => true,
+                'showWatermarkImage' => true,
     ],
-   // call mPDF methods on the fly
-   'methods' => [
+     'methods' => [
      'SetWatermarkText' => 'VERIFICADO',
      'SetWatermarkImage' =>  '../web/img/logo.png',
      'SetHeader'=>['Disipulos de cristo'],
@@ -352,7 +389,6 @@ span{
      */
     public function ingresoscaja($fecha,$tabla,$centro_costos,$concepto)
     {
-                     
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
@@ -361,16 +397,48 @@ span{
         ->andWhere("fecha <='".$fecha."-30'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
-    if($out==null)
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;
+    }
+
+    public function mision($fecha,$tabla,$centro_costos,$concepto)
     {
-       return 0;
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where('idconcepto='.$concepto)        
+        ->andWhere("fecha >='".$fecha."-01'")
+        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('valor_egreso');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;
     }
-    return $out;
-       
+
+    public function ingresosmesanterior($fecha,$tabla,$centro_costos,$concepto)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where('idtipoingreso='.$concepto)     
+        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('valor_ingreso');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;
     }
+
     public function ingresoscomprobante($fecha,$tabla,$centro_costos)
     {
-                     
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
@@ -378,11 +446,27 @@ span{
         ->andWhere("fecha <='".$fecha."-30'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
-    if($out==null)
-    {
-       return 0;
+        if($out==null)
+            {
+                return 0;
+            }
+        return $out;
+       
     }
-    return $out;
+
+     public function ingresoscomprobanteanterior($fecha,$tabla,$centro_costos)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where("fecha <='".$fecha."-30'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('valor_ingreso');
+        if($out==null)
+            {
+                return 0;
+            }
+        return $out;
        
     }
 
@@ -394,7 +478,6 @@ span{
 
     public function egresoscomprobantecaja($fecha,$tabla,$centro_costos)
     {
-                     
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
@@ -402,16 +485,15 @@ span{
         ->andWhere("fecha <='".$fecha."-30'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_egreso');
-    if($out==null)
-    {
-       return 0;
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;       
     }
-    return $out;
-       
-    }
+
     public function egresoscaja($fecha,$tabla,$centro_costos)
     {
-                     
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
@@ -419,17 +501,29 @@ span{
         ->andWhere("fecha <='".$fecha."-30'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_egreso');
-    if($out==null)
-    {
-       return 0;
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;       
     }
-    return $out;
-       
+    public function egresosmesanterior($fecha,$tabla,$centro_costos)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where("fecha <='".$fecha."-30'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('valor_egreso');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;       
     }
 
     public function totalotros($fecha,$tabla,$centro_costos,$concepto1,$concepto2)
     {
-                     
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
@@ -439,35 +533,49 @@ span{
         ->andWhere("fecha <='".$fecha."-30'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
-    if($out==null)
-    {
-       return 0;
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;      
     }
-    return $out;
-       
+     public function totalotrosanterior($fecha,$tabla,$centro_costos,$concepto1,$concepto2)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where('idtipoingreso !='.$concepto1)
+        ->andWhere('idtipoingreso !='.$concepto2)       
+        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('valor_ingreso');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;      
     }
 
     public function cajamesant($fecha,$centrocostos)
     {
-        $diezmo=$this->ingresoscaja($fecha,'recibo_caja_caja',$centrocostos,'1');
-        $ofrenda=$this->ingresoscaja($fecha,'recibo_caja_caja',$centrocostos,'2');
-        $otros=$this->totalotros($fecha,'recibo_caja_caja',$centrocostos,'1','2');
-        $egresoscaja=$this->egresoscaja($fecha,'recibo_caja_caja',$centrocostos);
-        $egresoscomcaja=$this->egresoscomprobantecaja($fecha,'comprobante_caja',$centrocostos);
-        $ingresoco=$this->ingresoscomprobante($fecha,'comprobante_caja',$centrocostos);
+        $diezmo=$this->ingresosmesanterior($fecha,'recibo_caja_caja',$centrocostos,'1');
+        $ofrenda=$this->ingresosmesanterior($fecha,'recibo_caja_caja',$centrocostos,'2');
+        $otros=$this->totalotrosanterior($fecha,'recibo_caja_caja',$centrocostos,'1','2');
+        $egresoscaja=$this->egresosmesanterior($fecha,'recibo_caja_caja',$centrocostos);
+        $egresoscomcaja=$this->egresosmesanterior($fecha,'comprobante_caja',$centrocostos);
+        $ingresoco=$this->ingresoscomprobanteanterior($fecha,'comprobante_caja',$centrocostos);
         $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja;
         return $r;
-
     }
 
     public function bancomesant($fecha,$centrocostos)
     {
-        $diezmo=$this->ingresoscaja($fecha,'recibo_caja_banco',$centrocostos,'1');
-        $ofrenda=$this->ingresoscaja($fecha,'recibo_caja_banco',$centrocostos,'2');
-        $otros=$this->totalotros($fecha,'recibo_caja_banco',$centrocostos,'1','2');
-        $egresoscaja=$this->egresoscaja($fecha,'recibo_caja_banco',$centrocostos);
-        $egresoscomcaja=$this->egresoscomprobantecaja($fecha,'comprobante_banco',$centrocostos);
-        $ingresoco=$this->ingresoscomprobante($fecha,'comprobante_banco',$centrocostos);
+        $diezmo=$this->ingresosmesanterior($fecha,'recibo_caja_banco',$centrocostos,'1');
+        $ofrenda=$this->ingresosmesanterior($fecha,'recibo_caja_banco',$centrocostos,'2');
+        $otros=$this->totalotrosanterior($fecha,'recibo_caja_banco',$centrocostos,'1','2');
+        $egresoscaja=$this->egresosmesanterior($fecha,'recibo_caja_banco',$centrocostos);
+        $egresoscomcaja=$this->egresosmesanterior($fecha,'comprobante_banco',$centrocostos);
+        $ingresoco=$this->ingresoscomprobanteanterior($fecha,'comprobante_banco',$centrocostos);
         $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja;
         return $r;
 
@@ -479,8 +587,7 @@ span{
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     */
-   
+     */   
 
 
     public function fechaanterior($fecha)
