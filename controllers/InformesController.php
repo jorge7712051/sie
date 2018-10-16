@@ -75,25 +75,6 @@ class InformesController extends Controller
     public function actionIndex()
     {
         $model = new Informes();
-        return $this->render('index', [
-                       'model' => $model
-            ]);
-    }
-
-    /**
-     * Displays a single Terceros model.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-       /**
-     * Creates a new Terceros model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-public function actionCreate()
-{
-$model = new Informes();
 $datos= array();
 if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
 {
@@ -339,8 +320,27 @@ if ($model->load(Yii::$app->request->post()))
         $pdf=$this->generarpdf($content);
         return $pdf->render();
             }
-         }      
+         } 
+        return $this->render('index', [
+                       'model' => $model
+            ]);
     }
+
+    /**
+     * Displays a single Terceros model.
+     * @param string $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+       /**
+     * Creates a new Terceros model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+public function actionCreate()
+{
+     
+}
 
    public function generarpdf($content)
 {

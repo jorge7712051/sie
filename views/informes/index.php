@@ -8,6 +8,7 @@ use kartik\widgets\DatePicker;
 use kartik\number\NumberControl;
 use kartik\widgets\FileInput;
 use app\models\CentroCostos;
+use kartik\mpdf\Pdf;
 
 
 /* @var $this yii\web\View */
@@ -19,7 +20,7 @@ use app\models\CentroCostos;
 
     <?php $form = ActiveForm::begin([
             'method' => 'post',
-            'action' => '/informes/create',
+           
             'id' => 'formulario-informe-mensual',                     
             'enableAjaxValidation' => true,
 ]); ?>

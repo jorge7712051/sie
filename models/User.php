@@ -18,6 +18,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public $role;
     public $authKey;
     public $accessToken;
+    public $verification_code;
 
 
 
