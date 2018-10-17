@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-10-2018 a las 05:37:30
+-- Tiempo de generación: 17-10-2018 a las 04:58:02
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.7
 
@@ -118,18 +118,19 @@ INSERT INTO `centro_costos` (`idcentrocostos`, `centrocostos`, `idanulo`) VALUES
 CREATE TABLE `ciudades` (
   `idciudad` int(11) NOT NULL,
   `ciudad` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `idanulo` int(11) DEFAULT '0'
+  `idanulo` int(11) DEFAULT '0',
+  `iddepartamento` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `ciudades`
 --
 
-INSERT INTO `ciudades` (`idciudad`, `ciudad`, `idanulo`) VALUES
-(1, 'BOGOTA', 0),
-(2, 'CALI', 1),
-(3, 'IBAGUE', 0),
-(4, 'BARRANQUILLA', 0);
+INSERT INTO `ciudades` (`idciudad`, `ciudad`, `idanulo`, `iddepartamento`) VALUES
+(1, 'BOGOTA', 0, 1),
+(2, 'CALI', 1, 4),
+(3, 'IBAGUE', 0, 2),
+(4, 'BARRANQUILLA', 0, 3);
 
 -- --------------------------------------------------------
 
@@ -246,6 +247,29 @@ INSERT INTO `concepto` (`idconcepto`, `concepto`, `piso`, `porcentaje`, `idanulo
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `departamento`
+--
+
+CREATE TABLE `departamento` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `idanulo` int(11) DEFAULT '0',
+  `idpais` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `departamento`
+--
+
+INSERT INTO `departamento` (`id`, `nombre`, `idanulo`, `idpais`) VALUES
+(1, 'CUNDINAMARCA', 0, 1),
+(2, 'TOLIMA', 0, 1),
+(3, 'ATLÁNTICO', 0, 1),
+(4, 'VALLE DEL CAUCA', 0, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `detalles_comprobante_egreso`
 --
 
@@ -318,6 +342,26 @@ CREATE TABLE `diezmo_pastores` (
 INSERT INTO `diezmo_pastores` (`id`, `valor`, `fecha`, `idpastor`, `idnulo`) VALUES
 (1, 100000, '2018-10-23', 10245009, 0),
 (3, 30000, '2018-10-01', 1024500910, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pais`
+--
+
+CREATE TABLE `pais` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `codigo` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
+  `idanulo` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `pais`
+--
+
+INSERT INTO `pais` (`id`, `nombre`, `codigo`, `idanulo`) VALUES
+(1, 'COLOMBIA', 'COP', 0);
 
 -- --------------------------------------------------------
 
@@ -520,18 +564,19 @@ CREATE TABLE `usuarios` (
   `centrocosto` bigint(20) NOT NULL,
   `idanulo` int(11) DEFAULT '0',
   `role` int(11) DEFAULT '0',
-  `authKey` varchar(250) COLLATE utf8_spanish_ci NOT NULL
+  `authKey` varchar(250) COLLATE utf8_spanish_ci NOT NULL,
+  `verification_code` varchar(250) COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `username`, `password`, `email`, `nombrecompleto`, `centrocosto`, `idanulo`, `role`, `authKey`) VALUES
-(7, 'administrador', '$2y$13$JGhjRSt8Z1o3G0BpHH67zO49HMZLhRo4hx.SJxT2R/SDme2XBZ8lO', 'leo77@hotmail.com', 'JORGE LEONARDO CORREA MUñOZ', 1, 0, 1, ''),
-(9, 'invitado', '$2y$13$/Kjwfo1ROyTkihMCQwSWJOX6aLpxIhKgNfc.4S.BEAJgt.SgvPbiK', 'jorge7712051@hotmail.com', 'IGLESIA DE SANTA LUCIA', 2, 0, 0, 'f3eb2dbddc07bb5d2f06d5c6dfc93d9faef1101e2aa0b490e4e40c07a4d7b3186631c875df3ffc08ea5f02d26240c8c1da6cbce772d8c3379662c2dd74427bb52a3234f69cc0246fe808faff5783a75f700feecacf2ef378ba7366fc0b31ab825b69373a'),
-(10, 'invitado2', '$2y$13$M0xExBpBRugomEbQImq/nO74y.XKFuyP2uI1t/nK9WeZKlhk8tFVG', 'prueba@hotmail.co', 'USUARIO DE PRUEBA', 2, 0, 0, '7a37d712078765a444205291d1bd7b796d466355f7ba74cf0f7ab5466b48c7933720c230aa63f12471d80ac8c6f286cd8e6a7d3621a350570ff41312132a6f1ba751f1f69018f0f66f339f5ada6552f89017bdb8a8ba7e6d671c9ea9290ba89a93ab46e3'),
-(11, 'jorge77120512', '$2y$13$tcoFp7XEJwymexpCJejQL.pSB6PK7B1lskr7.H8rG6geH13F3CqWa', 'jorg7712051@hotmail.com', 'IGELSUIA SANTA', 1, 0, 1, '537f00e540623d73f66717ef642e404ca52440dd0615f29fa991a51767115518cb318a4fe046bbb08c70c985878d98b07fc9f3e2a9489c19e296abcf311a7b41575bb4f8e73ef69aa3d0f574b6f4e074bbbd007a3d14a93d73f4244a2552f61da50ac767');
+INSERT INTO `usuarios` (`id`, `username`, `password`, `email`, `nombrecompleto`, `centrocosto`, `idanulo`, `role`, `authKey`, `verification_code`) VALUES
+(7, 'administrador', '$2y$13$JGhjRSt8Z1o3G0BpHH67zO49HMZLhRo4hx.SJxT2R/SDme2XBZ8lO', 'leo77@hotmail.com', 'JORGE LEONARDO CORREA MUñOZ', 1, 0, 1, '', ''),
+(9, 'invitado', '$2y$13$/Kjwfo1ROyTkihMCQwSWJOX6aLpxIhKgNfc.4S.BEAJgt.SgvPbiK', 'jorge7712051@hotmail.com', 'IGLESIA DE SANTA LUCIA', 2, 0, 0, 'f3eb2dbddc07bb5d2f06d5c6dfc93d9faef1101e2aa0b490e4e40c07a4d7b3186631c875df3ffc08ea5f02d26240c8c1da6cbce772d8c3379662c2dd74427bb52a3234f69cc0246fe808faff5783a75f700feecacf2ef378ba7366fc0b31ab825b69373a', ''),
+(10, 'invitado2', '$2y$13$M0xExBpBRugomEbQImq/nO74y.XKFuyP2uI1t/nK9WeZKlhk8tFVG', 'prueba@hotmail.co', 'USUARIO DE PRUEBA', 2, 0, 0, '7a37d712078765a444205291d1bd7b796d466355f7ba74cf0f7ab5466b48c7933720c230aa63f12471d80ac8c6f286cd8e6a7d3621a350570ff41312132a6f1ba751f1f69018f0f66f339f5ada6552f89017bdb8a8ba7e6d671c9ea9290ba89a93ab46e3', ''),
+(11, 'jorge77120512', '$2y$13$tcoFp7XEJwymexpCJejQL.pSB6PK7B1lskr7.H8rG6geH13F3CqWa', 'jorg7712051@hotmail.com', 'IGELSUIA SANTA', 1, 0, 1, '537f00e540623d73f66717ef642e404ca52440dd0615f29fa991a51767115518cb318a4fe046bbb08c70c985878d98b07fc9f3e2a9489c19e296abcf311a7b41575bb4f8e73ef69aa3d0f574b6f4e074bbbd007a3d14a93d73f4244a2552f61da50ac767', '');
 
 -- --------------------------------------------------------
 
@@ -606,7 +651,8 @@ ALTER TABLE `centro_costos`
 -- Indices de la tabla `ciudades`
 --
 ALTER TABLE `ciudades`
-  ADD PRIMARY KEY (`idciudad`);
+  ADD PRIMARY KEY (`idciudad`),
+  ADD KEY `FK_deptarmento_ciudad` (`iddepartamento`);
 
 --
 -- Indices de la tabla `comprobante_egreso`
@@ -621,6 +667,13 @@ ALTER TABLE `comprobante_egreso`
 --
 ALTER TABLE `concepto`
   ADD PRIMARY KEY (`idconcepto`);
+
+--
+-- Indices de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_pais_dep` (`idpais`);
 
 --
 -- Indices de la tabla `detalles_comprobante_egreso`
@@ -646,6 +699,12 @@ ALTER TABLE `detalle_recibo_caja`
 ALTER TABLE `diezmo_pastores`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_diezmo_pastor` (`idpastor`);
+
+--
+-- Indices de la tabla `pais`
+--
+ALTER TABLE `pais`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `pastores`
@@ -736,6 +795,12 @@ ALTER TABLE `concepto`
   MODIFY `idconcepto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de la tabla `detalles_comprobante_egreso`
 --
 ALTER TABLE `detalles_comprobante_egreso`
@@ -752,6 +817,12 @@ ALTER TABLE `detalle_recibo_caja`
 --
 ALTER TABLE `diezmo_pastores`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `pais`
+--
+ALTER TABLE `pais`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `terceros`
@@ -782,10 +853,22 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- Filtros para la tabla `ciudades`
+--
+ALTER TABLE `ciudades`
+  ADD CONSTRAINT `FK_deptarmento_ciudad` FOREIGN KEY (`iddepartamento`) REFERENCES `departamento` (`id`);
+
+--
 -- Filtros para la tabla `comprobante_egreso`
 --
 ALTER TABLE `comprobante_egreso`
   ADD CONSTRAINT `Fk_comprobante_egreso_centro_costos` FOREIGN KEY (`idcentrocostos`) REFERENCES `centro_costos` (`idcentrocostos`);
+
+--
+-- Filtros para la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD CONSTRAINT `fk_pais_dep` FOREIGN KEY (`idpais`) REFERENCES `pais` (`id`);
 
 --
 -- Filtros para la tabla `detalles_comprobante_egreso`
