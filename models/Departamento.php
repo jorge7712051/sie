@@ -47,8 +47,18 @@ class Departamento extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nombre' => 'Nombre',
             'idanulo' => 'Idanulo',
-            'idpais' => 'Idpais',
+            'idpais' => 'Pais',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+      if (parent::beforeSave($insert)) 
+      {
+        $this->nombre = strtoupper($this->nombre );
+        return true;
+      }
+      return false;  
     }
 
     /**

@@ -52,12 +52,18 @@ if ($session->isActive){
                 ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
                     ],
             ],
-            
+            ['label'=>'Datos Geograficos',
+                'items'=>[
+                    ['label'=>'Pais','url'=>['/pais/index']],
+                    ['label'=>'Departamento','url'=>['/departamento/index']],
+                    ['label' =>'Ciudades', 'url' => ['/ciudades/index']],
+                ]            
+
+            ],            
             ['label' => 'Adicionales',
              'items' => [
                  ['label' => 'Usuarios', 'url' => ['/usuarios/index']],
-                 ['label' => 'Tipos de identificaicon', 'url' => ['/tipo-id/index']],
-                 ['label' => 'Ciudades', 'url' => ['/ciudades/index']],
+                 ['label' => 'Tipos de identificaicon', 'url' => ['/tipo-id/index']],                 
                  ['label' => 'Conceptos', 'url' => ['/concepto/index']],
                  ['label' => 'Centro de costos', 'url' => ['/centro-costos/index']],
                  ['label' => 'Tipos de Ingresos', 'url' => ['/tipo-ingreso/index']],

@@ -18,6 +18,9 @@ class Ciudades extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    
+
+
     public static function tableName()
     {
         return 'ciudades';
@@ -29,8 +32,8 @@ class Ciudades extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['ciudad'], 'required'],
-            [['idciudad', 'idanulo'], 'integer'],
+            [['ciudad','iddepartamento'], 'required'],
+            [['idciudad', 'idanulo','iddepartamento'], 'integer'],
             [['ciudad'], 'string', 'max' => 100],
             [['idciudad'], 'unique'],
         ];
@@ -44,6 +47,7 @@ class Ciudades extends \yii\db\ActiveRecord
         return [
             'idciudad' => 'Idciudad',
             'ciudad' => 'Ciudad',
+            'iddepartamento' => 'Departamento',
             'idanulo' => 'Idanulo',
         ];
     }
@@ -65,5 +69,10 @@ class Ciudades extends \yii\db\ActiveRecord
     public function getTerceros()
     {
         return $this->hasMany(Terceros::className(), ['idciudad' => 'idciudad']);
+    }
+
+    public function getDepartamento()
+    {
+        return $this->hasOne(Departamento::className(), ['id' => 'iddepartamento']);
     }
 }

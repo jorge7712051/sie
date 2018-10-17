@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use app\models\Departamento;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CiudadesSearch */
@@ -24,9 +26,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'idciudad',
-            'ciudad',
+            'idciudad',           
+            'ciudad',           
+            [
+                'attribute' => 'departamento',
+                'value' => 'departamento.nombre',
+                'filter'=>ArrayHelper::map(Departamento::find()->all(),'nombre','nombre'),
+            ],
+            [
+                'attribute' => 'pais',
+                'value' => 'pais',
+               
+            ],
             //'idanulo',
 
             ['class' => 'yii\grid\ActionColumn'],

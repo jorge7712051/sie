@@ -59,13 +59,7 @@ class Concepto extends \yii\db\ActiveRecord
     {
       if (parent::beforeSave($insert)) 
       {
-        if($insert)
-        {
-          $this->concepto = strtoupper($this->concepto );        
-        }
-        else{
-          $this->concepto = strtoupper($this->concepto ); 
-        }
+        $this->concepto = strtoupper($this->concepto );       
         return true;
       }
       return false;  

@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use app\models\Pais;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\DepartamentoSearch */
@@ -16,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Departamento', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Crear Departamento', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -27,9 +29,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'nombre',
-            'idanulo',
-            'idpais',
-
+            //'idanulo',
+            [
+                'attribute'=>'idpais',
+                'value'=>function($model){
+                    $pais= Pais::findOne($model->idpais);
+                    return $pais->nombre;
+                },
+                'filter'=>ArrayHelper::map(Pais::find()->all(),'id','nombre'),
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

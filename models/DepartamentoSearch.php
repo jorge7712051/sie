@@ -42,7 +42,7 @@ class DepartamentoSearch extends Departamento
     public function search($params)
     {
         $query = Departamento::find();
-
+        $query->where('idanulo=0');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

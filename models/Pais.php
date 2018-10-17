@@ -50,6 +50,18 @@ class Pais extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public function beforeSave($insert)
+    {
+      if (parent::beforeSave($insert)) 
+      {
+        $this->nombre = strtoupper($this->nombre );
+        $this->codigo = strtoupper($this->codigo );     
+        return true;
+      }
+      return false;  
+    }  
+
     /**
      * @return \yii\db\ActiveQuery
      */

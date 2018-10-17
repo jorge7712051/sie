@@ -15,11 +15,14 @@ class CiudadesSearch extends Ciudades
     /**
      * {@inheritdoc}
      */
+
+    public $departamento;
+    public $pais;
     public function rules()
     {
         return [
             [['idciudad', 'idanulo'], 'integer'],
-            [['ciudad'], 'safe'],
+            [['ciudad','departamento','pais'], 'safe'],
         ];
     }
 
@@ -42,12 +45,21 @@ class CiudadesSearch extends Ciudades
     public function search($params)
     {
         $query = Ciudades::find();
-        $query->where('idanulo=0');
+        $query->where('ciudades.idanulo=0');
+        $query->joinWith(['departamento']);
+        $query->innerJoin('pais', 'departamento.idpais= pais.id');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+
         ]);
+        $dataProvider->sort->attributes['departamento'] = [
+        // The tables are the ones our relation are configured to
+        // in my case they are prefixed with "tbl_"
+        'asc' => ['departamento.nombre' => SORT_ASC],
+        'desc' => ['departamento.nombre' => SORT_DESC],
+    ];
 
         $this->load($params);
 
@@ -59,11 +71,12 @@ class CiudadesSearch extends Ciudades
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'idciudad' => $this->idciudad,
+            'idciudad' => $this->idciudad,            
             'idanulo' => $this->idanulo,
         ]);
 
         $query->andFilterWhere(['like', 'ciudad', $this->ciudad]);
+        $query->andFilterWhere(['like', 'departamento.nombre', $this->departamento]);
 
         return $dataProvider;
     }

@@ -42,6 +42,7 @@ class PaisSearch extends Pais
     public function search($params)
     {
         $query = Pais::find();
+        $query->where('idanulo=0');
 
         // add conditions that should always apply here
 
