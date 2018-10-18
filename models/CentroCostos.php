@@ -42,7 +42,7 @@ class CentroCostos extends \yii\db\ActiveRecord
     {
         return [
             'idcentrocostos' => 'Id',
-            'centrocostos' => 'Centro de costos',
+            'centrocostos' => 'Nombre Iglesia',
             'idanulo' => 'Activo',
         ];
     }

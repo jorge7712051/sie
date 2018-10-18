@@ -8,7 +8,7 @@ use yii\helpers\Html;
 $this->title = 'Actualizar Departamento: ' . $model->nombre;
 $this->params['breadcrumbs'][] = ['label' => 'Departamentos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->nombre, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Actualizar';
 ?>
 <div class="departamento-update">
 

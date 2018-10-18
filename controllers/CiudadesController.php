@@ -60,6 +60,7 @@ class CiudadesController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    
                 ],
             ],
         ];

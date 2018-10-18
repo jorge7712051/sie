@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Ciudades */
 
-$this->title = 'Actualizar Ciudades: ' . $model->idciudad;
+$this->title = 'Actualizar Ciudades: ' . $model->ciudad;
 $this->params['breadcrumbs'][] = ['label' => 'Ciudades', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->idciudad, 'url' => ['view', 'id' => $model->idciudad]];
+$this->params['breadcrumbs'][] = ['label' => $model->ciudad, 'url' => ['view', 'id' => $model->idciudad]];
 $this->params['breadcrumbs'][] = 'Actualizar';
 ?>
 <div class="ciudades-update">

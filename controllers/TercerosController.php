@@ -62,6 +62,7 @@ class TercerosController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    
                 ],
             ],
         ];
@@ -206,7 +207,6 @@ class TercerosController extends Controller
     {
         $params = ","." ".",";
         $out = [];       
-             
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*,
             CASE
@@ -214,8 +214,8 @@ class TercerosController extends Controller
             ELSE concat( t.nombre ," ", t.apellido)
             END as resultado')])
         ->from('terceros as t')
-        ->where('t.nombre  LIKE "' . $q .'%"')
-        ->orWhere(' t.razon_social LIKE "' . $q .'%"')
+        ->where('t.nombre  LIKE :q',[':q'=>$q.'%'] )
+        ->orWhere(' t.razon_social LIKE :q',[':q'=>$q.'%'] )
         ->andWhere('t.idanulo=0')
         
         ->all();

@@ -6,13 +6,13 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\CentroCostos */
 
-$this->title = $model->idcentrocostos;
-$this->params['breadcrumbs'][] = ['label' => 'Centro Costos', 'url' => ['index']];
+$this->title = $model->centrocostos;
+$this->params['breadcrumbs'][] = ['label' => 'Iglesias', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="centro-costos-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h2><?= Html::encode($this->title) ?></h2>
 
     <p>
         <?= Html::a('Actualizar', ['update', 'id' => $model->idcentrocostos], ['class' => 'btn btn-primary']) ?>

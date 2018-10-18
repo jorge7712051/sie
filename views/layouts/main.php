@@ -45,7 +45,8 @@ if ($session->isActive){
             ['label' => 'Informe', 'url' => ['/informes/index']],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
-            ['label' => 'Terceros',
+            ['label' => '<span class="glyphicon glyphicon-headphones"></span> Terceros',
+            'encode' => false,
             'items'=>[
                 ['label' => 'Pastores', 'url' => ['/pastores/index']],
                 ['label' => 'Terceros', 'url' => ['/terceros/index']],
@@ -65,7 +66,7 @@ if ($session->isActive){
                  ['label' => 'Usuarios', 'url' => ['/usuarios/index']],
                  ['label' => 'Tipos de identificaicon', 'url' => ['/tipo-id/index']],                 
                  ['label' => 'Conceptos', 'url' => ['/concepto/index']],
-                 ['label' => 'Centro de costos', 'url' => ['/centro-costos/index']],
+                 ['label' => 'Iglesias', 'url' => ['/centro-costos/index']],
                  ['label' => 'Tipos de Ingresos', 'url' => ['/tipo-ingreso/index']],
                         ],
              ],

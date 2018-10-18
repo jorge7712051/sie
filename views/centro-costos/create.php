@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\CentroCostos */
 
-$this->title = 'Create Centro Costos';
-$this->params['breadcrumbs'][] = ['label' => 'Centro Costos', 'url' => ['index']];
+$this->title = 'Crear Iglesia';
+$this->params['breadcrumbs'][] = ['label' => 'Iglesia', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="centro-costos-create">

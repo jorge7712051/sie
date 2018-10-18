@@ -76,67 +76,54 @@ $this->params['breadcrumbs'][] = $this->title;
                     if($tercero->razon_social!=""){return $tercero->razon_social;}
                     return $tercero->nombre." ".$tercero->apellido;
                 }
-
-
             ],
-             [
+            [
                 'attribute'=>'valor',
                 'footerOptions' => ['class' => 'valor-total'],
-               'value'=>function($model){  
-                        Yii::$app->formatter->locale = 'et-EE';                 
-                    return Yii::$app->formatter->asCurrency($model->valor,'USD'); 
-                },
-                'footer' => ComprobanteEgreso::getTotal($dataProvider->models, 'valor')
-               
-            ],
-
-            
+                'value'=>function($model){  
+                            Yii::$app->formatter->locale = 'et-EE';                 
+                            return Yii::$app->formatter->asCurrency($model->valor,'USD'); 
+                        },
+                'footer' => ComprobanteEgreso::getTotal($dataProvider->models, 'valor')               
+            ],            
             [
                 'attribute'=>'idconcepto',
                 'value'=>function($model){
                     $concepto = Concepto::findOne($model->idconcepto);
                     return $concepto->concepto;
                 }
-
             ],
-            //'fechacreacion',
-            //'adjunto',
-            //'subtotal',
-            //'total',
-  [
-          'class' => 'yii\grid\ActionColumn',
-          'header' => 'Acciones',
-          'headerOptions' => ['style' => 'color:#337ab7'],
-          'template' => '{update}{delete}',
-          'buttons' => [
-          'update' => function ($url, $model) {
-                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
-                          'title' => 'Actualizar',
-                ]);
-            },
-            'delete' => function ($url, $model) {
-                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'header' => 'Acciones',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'template' => '{update}{delete}',
+                'buttons' => [
+                        'update' => function ($url, $model) {
+                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                            'title' => 'Actualizar',
+                            ]);
+                        },
+                        'delete' => function ($url, $model) {
+                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                             'title' => 'Borrar',
-                ]);
-            }
+                            'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
+                            ]);
+                        }
 
-          ],
-          'urlCreator' => function ($action, $model, $key, $index) {
-           
-
-            if ($action === 'update') {
-                $url ='/detalles-comprobante-egreso/update?id='.$model->iddetalle;
-                return $url;
-            }
-            if ($action === 'delete') {
-                $url ='/detalles-comprobante-egreso/delete?id='.$model->iddetalle;
-                Url::remember();
-
-                return $url;
-            }
-
-          }
-          ],
+                ],
+                'urlCreator' => function ($action, $model, $key, $index) {
+                    if ($action === 'update') {
+                    $url =Url::to(['detalles-comprobante-egreso/update', 'id' => $model->iddetalle]);
+                     return $url;
+                    }   
+                    if ($action === 'delete') {
+                    $url =Url::to(['detalles-comprobante-egreso/delete', 'id' => $model->iddetalle]);                   
+                    Url::remember();
+                    return $url;
+                    }
+                }
+            ],
         ],
     ]); ?>
  <?= $this->registerJs("updatecomprobantes('alta','baja')", View::POS_READY,'my-button-handler');?>

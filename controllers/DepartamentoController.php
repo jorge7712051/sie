@@ -8,6 +8,8 @@ use app\models\DepartamentoSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\User;
 
 /**
  * DepartamentoController implements the CRUD actions for Departamento model.

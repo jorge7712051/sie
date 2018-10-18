@@ -109,7 +109,7 @@ class SiteController extends Controller
     {
        
         if (!Yii::$app->user->isGuest) {
-            return $this->actionIndex();
+            return $this->actionLogin();
         }
 
         $model = new LoginForm();

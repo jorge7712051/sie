@@ -7,7 +7,7 @@ use app\models\Concepto;
 /* @var $this yii\web\View */
 /* @var $model app\models\Concepto */
 
-$this->title = $model->idconcepto;
+$this->title = $model->concepto;
 $this->params['breadcrumbs'][] = ['label' => 'Conceptos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

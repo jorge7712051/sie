@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Ciudades;
+use yii\db\ActiveQuery;
 
 /**
  * CiudadesSearch represents the model behind the search form of `app\models\Ciudades`.
@@ -44,21 +45,45 @@ class CiudadesSearch extends Ciudades
      */
     public function search($params)
     {
-        $query = Ciudades::find();
-        $query->where('ciudades.idanulo=0');
-        $query->joinWith(['departamento']);
-        $query->innerJoin('pais', 'departamento.idpais= pais.id');
+        $query = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('c.*,d.id,d.nombre as nombredep,p.nombre as nombrepais')])
+        ->from('ciudades as c')
+        ->innerJoin('departamento as d','c.iddepartamento=d.id')
+        ->innerJoin('pais as p','d.idpais=p.id')
+        ->where('c.idanulo=0' )
+        ->andWhere('d.idanulo=0')
+        ->andWhere('p.idanulo=0');
+        
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
 
         ]);
-        $dataProvider->sort->attributes['departamento'] = [
+        $dataProvider->setSort([
+        'attributes' => [
+            'ciudad' => [
+                'asc' => ['ciudad' => SORT_ASC],
+                'desc' => ['ciudad' => SORT_DESC],
+                'default' => SORT_ASC
+            ],
+            'departamento' => [
+                'asc' => ['nombredep' => SORT_ASC],
+                'desc' => ['nombredep' => SORT_DESC],
+                'default' => SORT_ASC,
+            ],
+            'pais' => [
+                'asc' => ['nombrepais' => SORT_ASC],
+                'desc' => ['nombrepais' => SORT_DESC],
+                'default' => SORT_ASC,
+            ],
+        ]
+    ]);
+       $dataProvider->sort->attributes['nombredep'] = [
         // The tables are the ones our relation are configured to
         // in my case they are prefixed with "tbl_"
-        'asc' => ['departamento.nombre' => SORT_ASC],
-        'desc' => ['departamento.nombre' => SORT_DESC],
+        'asc' => ['nombredep' => SORT_ASC],
+        'desc' => ['nombredep' => SORT_DESC],
     ];
 
         $this->load($params);
@@ -71,12 +96,13 @@ class CiudadesSearch extends Ciudades
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'idciudad' => $this->idciudad,            
+            'idciudad' => $this->idciudad,                    
             'idanulo' => $this->idanulo,
         ]);
 
         $query->andFilterWhere(['like', 'ciudad', $this->ciudad]);
-        $query->andFilterWhere(['like', 'departamento.nombre', $this->departamento]);
+        $query->andFilterWhere(['like', 'd.nombre', $this->departamento]);
+        $query->andFilterWhere(['like', 'p.nombre', $this->pais]);
 
         return $dataProvider;
     }

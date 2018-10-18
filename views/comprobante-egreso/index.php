@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use app\models\CentroCostos;
+use kartik\daterange\DateRangePicker;
+use kartik\widgets\DatePicker;
 
 
 /* @var $this yii\web\View */
@@ -31,7 +33,19 @@ $this->params['breadcrumbs'][] = $this->title;
             //['class' => 'yii\grid\SerialColumn'],
 
             'idcomprobante',
-            'fecha',             
+            [
+                    'attribute'=>'fecha',
+                    'value' =>'fecha',
+                    'filter'=>DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute'=>'fecha',
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+            ])       
+            ],
+         
             [
                 'attribute'=>'idcentrocostos',
                 'value'=>function($model){

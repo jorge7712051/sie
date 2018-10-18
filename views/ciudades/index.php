@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use app\models\Departamento;
+use app\models\Pais;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CiudadesSearch */
@@ -30,17 +32,56 @@ $this->params['breadcrumbs'][] = $this->title;
             'ciudad',           
             [
                 'attribute' => 'departamento',
-                'value' => 'departamento.nombre',
-                'filter'=>ArrayHelper::map(Departamento::find()->all(),'nombre','nombre'),
+                'value' => 'nombredep',
+                'filter'=>ArrayHelper::map(Departamento::find()->where('idanulo=0' )->all(),'nombre','nombre'),
             ],
             [
                 'attribute' => 'pais',
-                'value' => 'pais',
+                'value' => 'nombrepais',
+                'filter'=>ArrayHelper::map(Pais::find()->where('idanulo=0' )->all(),'nombre','nombre'),
                
             ],
             //'idanulo',
+           [
+                'class' => 'yii\grid\ActionColumn',
+                'header' => 'Acciones',
+                'headerOptions' => ['style' => 'color:#337ab7'],
+                'template' => '{view}{update}{delete}',
+                'buttons' => [
+                        'view' => function ($url, $model) {
+                            return Html::a('<span class="glyphicon glyphicon-eye-open"> </span>', $url, [
+                            'title' => 'Ver',
 
-            ['class' => 'yii\grid\ActionColumn'],
+                            ]);
+                        },
+                        'update' => function ($url, $model) {
+                            return Html::a('<span class="glyphicon glyphicon-pencil"> </span>', $url, [
+                            'title' => 'Actualizar',
+                            ]);
+                        },
+                        'delete' => function ($url, $model) {
+                            return Html::a('<span class="glyphicon glyphicon-trash"> </span>', $url, [
+                            'title' => 'Borrar',
+                            'data-confirm'=>'¿Está seguro de eliminar esta ciudad?',
+                            ]);
+                        }
+
+                ],
+                'urlCreator' => function ($action, $model, $key, $index) {
+                    if ($action === 'view') {
+                    $url =Url::to(['ciudades/view', 'id' => $model['idciudad']]);
+                    return $url;
+                    }
+                    if ($action === 'update') {
+                    $url =Url::to(['ciudades/update', 'id' => $model['idciudad']]);
+                    return $url;
+                    }   
+                    if ($action === 'delete') {
+                    $url =Url::to(['ciudades/delete', 'id' => $model['idciudad']]);                 
+                    return $url;
+                    }
+                }
+            ],
         ],
     ]); ?>
 </div>

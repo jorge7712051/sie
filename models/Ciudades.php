@@ -18,7 +18,7 @@ class Ciudades extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    
+    public $pais;
 
 
     public static function tableName()

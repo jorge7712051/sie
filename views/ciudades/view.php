@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Ciudades */
 
-$this->title = $model->idciudad;
+$this->title = $model->ciudad;
 $this->params['breadcrumbs'][] = ['label' => 'Ciudades', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Borrar', ['delete', 'id' => $model->idciudad], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => '¿Seguro que quieres eliminar este elemento?',
+                'confirm' => '¿Seguro que quieres eliminar esta ciudad?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'idciudad',
             'ciudad',
-            'idanulo',
+            //'idanulo',
         ],
     ]) ?>
 
