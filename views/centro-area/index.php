@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Centro Area', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Crear Centro Area', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'nombre',
             'descripcion:ntext',
             'idarea',
-            'idanulo',
+            //'idanulo',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

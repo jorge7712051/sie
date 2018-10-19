@@ -42,6 +42,7 @@ class AreaSearch extends Area
     public function search($params)
     {
         $query = Area::find();
+        $query->where('idanulo=0');
 
         // add conditions that should always apply here
 

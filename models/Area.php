@@ -29,7 +29,7 @@ class Area extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idarea', 'nombre'], 'required'],
+            [['nombre'], 'required'],
             [['idarea', 'idanulo'], 'integer'],
             [['nombre'], 'string', 'max' => 200],
             [['idarea'], 'unique'],
@@ -43,9 +43,19 @@ class Area extends \yii\db\ActiveRecord
     {
         return [
             'idarea' => 'Idarea',
-            'nombre' => 'Nombre',
+            'nombre' => 'Nombre area',
             'idanulo' => 'Idanulo',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+      if (parent::beforeSave($insert)) 
+      {
+        $this->nombre = strtoupper($this->nombre );
+        return true;
+      }
+      return false;  
     }
 
     /**

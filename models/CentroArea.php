@@ -48,9 +48,19 @@ class CentroArea extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nombre' => 'Nombre',
             'descripcion' => 'Descripcion',
-            'idarea' => 'Idarea',
+            'idarea' => 'Area',
             'idanulo' => 'Idanulo',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+      if (parent::beforeSave($insert)) 
+      {
+        $this->nombre = strtoupper($this->nombre );
+        return true;
+      }
+      return false;  
     }
 
     /**
