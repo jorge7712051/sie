@@ -85,6 +85,11 @@ if ($model->load(Yii::$app->request->post()))
 {
     if($model->validate())
     {
+    $fecha1=explode("-", $model->fecha);
+    $ano=$fecha1[0];
+    $nextmes=$fecha1[1]+1;
+    $nextmes=$this->mes($nextmes);
+    $mes=$this->mes($fecha1[1]);
     $nombre=$this->getcentrocostos($model->centro_costos);
     $datos['diezmo']=$this->ingresoscaja($model->fecha,'recibo_caja_caja',$model->centro_costos,'1');
     $datos['diezmobanco']=$this->ingresoscaja($model->fecha,'recibo_caja_banco',$model->centro_costos,'1');
@@ -135,7 +140,7 @@ if ($model->load(Yii::$app->request->post()))
         </div>
         <div class='col-xs-4'>
             <span><strong>FECHA: </strong></span>
-            <span >$model->fecha </span>
+            <span >".$mes." DEL ".$ano." </span>
         </div>
     </div>
     <div class='row'>
@@ -144,98 +149,98 @@ if ($model->load(Yii::$app->request->post()))
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
+        <div class='col-xs-6'>
             <span><strong>1.</strong> INGRESO DIEZMOS EN CAJA</span>
         </div>
-        <div class='col-xs-4 borde-abajo'>
+        <div class='col-xs-3 borde-abajo'>
         <span>$ ".$datos['diezmo']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
+        <div class='col-xs-6'>
             <span><strong>2.</strong> INGRESO OFRENDAS EN CAJA</span>
         </div>
-        <div class='col-xs-4 borde-abajo'>
+        <div class='col-xs-3 borde-abajo'>
             <span >$ ". $datos['ofrenda']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
+        <div class='col-xs-6'>
             <span><strong>3.</strong> OTROS OFRENDAS EN CAJA</span>
         </div>
-        <div class='col-xs-4  borde-abajo'>
+        <div class='col-xs-3  borde-abajo'>
             <span>$ ".$datos['otros']."</span>
         </div> 
     </div>
     <div class='row'>
-        <div class='col-xs-4 centro'>
+        <div class='col-xs-6 centro'>
             <span><strong>TOTAL INGRESO EN CAJA</strong></span>
         </div>
-        <div class='col-xs-offset-4  col-xs-4 borde-abajo'>
+        <div class='col-xs-offset-3  col-xs-3 borde-abajo'>
             <span>$ ".$totalcaja."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
+        <div class='col-xs-6'>
             <span><strong>4.</strong> SALDO ANTERIOR EN CAJA </span>
         </div>
-        <div class='col-xs-4 borde-abajo'>
+        <div class='col-xs-3 borde-abajo'>
             <span>$ ".$datos['cajamesant']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4 centro'>
+        <div class='col-xs-6 centro'>
             <span ><strong>TOTAL DISPONIBLE EN CAJA</strong></span>
         </div>
-        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
             <span >$ ".$datos['cajadisponible']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4 centro'>
-            <span ><strong>5. TOTAL GASTO DE CAJA</strong></span>
+        <div class='col-xs-6 centro'>
+            <span ><strong>TOTAL GASTO DE CAJA</strong></span>
         </div>
-        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
             <span>$ -".$datos['egresocaja']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4 centro'>
+        <div class='col-xs-6 centro'>
             <span ><strong>ENVIADO A LA MISION</strong></span>
         </div>
-        <div class='col-xs-4 borde-abajo col-xs-offset-4 '>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
             <span>$ -".$datos['totalmision']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
-            <span ><strong>6.</strong> DIEZMO</span>
+        <div class='col-xs-6'>
+            <span ><strong>5.</strong> DIEZMO</span>
         </div>
-        <div class='col-xs-4 borde-abajo '>
+        <div class='col-xs-3 borde-abajo '>
             <span>$ ".$datos['diezmo']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
-            <span ><strong>7.</strong> 4% ENIVIADO A LA MISION</span>
+        <div class='col-xs-6'>
+            <span ><strong>6.</strong> 4% ENIVIADO A LA MISION</span>
         </div>
-        <div class='col-xs-4 borde-abajo '>
+        <div class='col-xs-3 borde-abajo '>
             <span>$ ".$datos['cuatro']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-4'>
-            <span ><strong>8.</strong> OFRENDAS (BONOS-OTROS)</span>
+        <div class='col-xs-6'>
+            <span ><strong>7.</strong> OFRENDAS (BONOS-OTROS)</span>
         </div>
-        <div class='col-xs-4 borde-abajo '>
+        <div class='col-xs-3 borde-abajo '>
             <span>$ ".$datos['bonos']."</span>
         </div>
     </div>
     <div class='row'>
-        <div class='col-xs-8'>
+        <div class='col-xs-9'>
             <span ><strong>TOTAL GENERAL DE EGRESOSO DE CAJA (Total de gastos + total enviado a la misión)</strong></span>
         </div>
-        <div class='col-xs-4 borde-abajo '>
+        <div class='col-xs-3 borde-abajo '>
             <span>$ -".$datos['egresostotales']."</span>
         </div>
     </div>
@@ -247,75 +252,92 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>$ ".$datos['cajafinal']."</strong></span>
         </div>
     </div>
-<div class='row'>
-    <div class='col-xs-12'>
-    <h5><strong>MOVIMIENTO BANCOS<strong></h5>
+    <div class='row'>
+        <div class='col-xs-12'>
+            <h5><strong>MOVIMIENTO BANCOS<strong></h5>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-4'>
-        <span><strong>1.</strong> INGRESO DIEZMOS EN BANCOS</span>
+    <div class='row'>
+        <div class='col-xs-6'>
+            <span><strong>1.</strong> INGRESO DIEZMOS EN BANCOS</span>
+        </div>
+        <div class='col-xs-3 borde-abajo '>
+            <span>$ ".$datos['diezmobanco']."</span>
+        </div>
     </div>
-    <div class='col-xs-4 borde-abajo '>
-        <span>$ ".$datos['diezmobanco']."</span>
+    <div class='row'>
+        <div class='col-xs-6'>
+            <span><strong>2.</strong> INGRESO OFRENDAS EN BANCOS</span>
+        </div>
+        <div class='col-xs-3 borde-abajo'>
+            <span >$  ". $datos['ofrendabanco']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-4'>
-        <span><strong>2.</strong> INGRESO OFRENDAS EN BANCOS</span>
+    <div class='row'>
+        <div class='col-xs-6'>
+            <span><strong>3.</strong> OTROS INGRESOS EN BANCOS</span>
+        </div>
+        <div class='col-xs-3 borde-abajo'>
+            <span >$ ".$datos['otrosbanco']."</span>
+        </div> 
     </div>
-    <div class='col-xs-4 borde-abajo'>
-        <span >$  ". $datos['ofrendabanco']."</span>
+    <div class='row'>
+        <div class='col-xs-6 centro'>
+            <span ><strong>TOTAL INGRESO EN BANCOS</strong></span>
+        </div>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
+            <span >$ ".$totalbanco."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-4'>
-    <span><strong>3.</strong> OTROS OFRENDAS EN BANCOS</span>
+    <div class='row'>
+        <div class='col-xs-6'>
+            <span><strong>4.</strong> SALDO ANTERIOR EN BANCOS </span>
+        </div>
+        <div class='col-xs-3  borde-abajo'>
+            <span>$ ". $datos['bancosmesant']."</span>
+        </div>
     </div>
-    <div class='col-xs-4 borde-abajo'>
-    <span >$ ".$datos['otrosbanco']."</span>
-    </div> 
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL INGRESO EN BANCOS</strong></span>
+    <div class='row'>
+        <div class='col-xs-6 centro'>
+            <span ><strong>TOTAL DISPONIBLE EN BANCOS</strong></span>
+        </div>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3'>
+            <span>$ ".$datos['bancodisponible']."</span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span >$ ".$totalbanco."</span>
+    <div class='row'>
+        <div class='col-xs-6 centro'>
+            <span><strong>TOTAL GASTO EN BANCOS</strong></span>
+        </div>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3'>
+            <span>$ -".$datos['egresobanco']."</span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8'>
-    <span><strong>4.</strong> SALDO ANTERIOR EN BANCOS </span>
+    <div class='row'>
+        <div class='col-xs-6 centro'>
+            <span ><strong>SALDO FINAL EN BANCOS</strong></span>
+        </div>
+        <div class='col-xs-3 borde-abajo col-xs-offset-3'>
+            <span><strong>$ ".$datos['bancofinal']."</strong></span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ". $datos['bancosmesant']."</span>
+    <div class='row colorbajo'>
+        <div class='col-xs-9'>
+            <span><strong>DISPONIBLE EN CAJA PARA EL MES DE : ".$nextmes."</strong></span>
+        </div>
+        
+        <div class='col-xs-3 borde-abajo '>
+            <span><strong>$ ".$datos['cajafinal']."</strong></span>
+        </div>
     </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL DISPONIBLE EN BANCOS</strong></span>
+    <div class='row colorbajo'>
+        <div class='col-xs-9'>
+            <span><strong>DISPONIBLE EN BANCO PARA EL MES DE : ".$nextmes."</strong></span>
+        </div>
+        <div class='col-xs-3 borde-abajo '>
+            <span><strong>$ ".$datos['bancofinal']."</strong></span>
+        </div>
     </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ ".$datos['bancodisponible']."</span>
-    </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>TOTAL GASTO EN BANCOS</strong></span>
-    </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'>$ -".$datos['egresobanco']."</span>
-    </div>
-</div>
-<div class='row'>
-    <div class='col-xs-8 centro'>
-    <span ><strong>SALDO FINAL EN BANCOS</strong></span>
-    </div>
-    <div class='col-xs-4'>
-    <span class='decoracion'><strong>$ ".$datos['bancofinal']."</strong></span>
-    </div>
-</div>
 ";
         $pdf=$this->generarpdf($content);
         return $pdf->render();
@@ -337,9 +359,38 @@ if ($model->load(Yii::$app->request->post()))
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-public function actionCreate()
+public function mes($fecha)
 {
-     
+    if($fecha==13){$fecha=1;}
+    
+    switch($fecha) {
+            case "01" : $mes= "ENERO";
+                        break;
+            case "02" : $mes= "FEBREROS";
+                        break;
+            case "03" : $mes= "MARZO";
+                        break;
+            case "04" : $mes= "ABRIL";
+                       break;
+            case "05" : $mes= "MAYO";
+                        break;
+            case "06" : $mes= "JUNIO";
+                        break;
+            case "07" : $mes= "JULIO";
+                        break;
+            case "08" : $mes= "AGOSTOS";
+                        break;
+            case "09" : $mes= "SEPTIEMBRE";
+                        break;
+            case "10" : $mes= "OCTUBRE";
+                        break;
+            case "11" : $mes= "NOVIEMBRE";
+                        break;
+            case "12" : $mes="DICIEMBRE";
+            break;
+             }
+    return $mes  ;
+          
 }
 
    public function generarpdf($content)
@@ -355,15 +406,20 @@ public function actionCreate()
     'cssInline' => '.kv-heading-1{font-size:10px} h3,h5{ text-align: center; }
     .decoracion{ text-decoration: underline;}
     h5{background: #cce5ff;padding: 5px;}
+    .colorbajo{background: #cce5ff;padding: 5px;}
     .col-xs-4 { width: 33.33333333%; }
     .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
         float: left;
     }
+    .col-xs-offset-3 {margin-left: 25%;}
+    .col-xs-6 {width: 50%;}
+    .col-xs-3 { width: 25%;}
     .borde-abajo{ border-bottom: 1px solid black;}
     span{font-size:13px;}
     .row{margin-bottom: 8px;}
     .centro{ text-align: center;}
     .col-xs-offset-4 { margin-left: 33.33333333%;}
+    .col-xs-9 { width: 75%;}
     .col-xs-8 {width: 66.66666667%;}',
     'options' => ['title' => 'Krajee Report Title',                
                 'SetWatermarkImage'=>'../web/img/logo.png',

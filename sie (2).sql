@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-10-2018 a las 04:58:02
+-- Tiempo de generación: 19-10-2018 a las 05:42:54
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.7
 
@@ -21,6 +21,18 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sie`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `area`
+--
+
+CREATE TABLE `area` (
+  `idarea` int(11) NOT NULL,
+  `nombre` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `idanulo` int(11) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
@@ -86,6 +98,20 @@ INSERT INTO `caja` (`id`, `valor_ingreso`, `valor_egreso`, `fecha`, `idcomproban
 CREATE TABLE `caja_conceptos_generales` (
   `id` int(11) NOT NULL,
   `nombre` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `idanulo` int(11) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `centro_area`
+--
+
+CREATE TABLE `centro_area` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `descripcion` text COLLATE utf8_spanish_ci NOT NULL,
+  `idarea` int(11) NOT NULL,
   `idanulo` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -213,7 +239,7 @@ CREATE TABLE `comprobante_egreso` (
 INSERT INTO `comprobante_egreso` (`idcomprobante`, `fecha_creacion`, `fecha`, `bloqueo`, `valor`, `idcentrocostos`, `adjunto`, `idanulo`, `codigo`, `anulado`, `alta`) VALUES
 (111111, '2018-10-08 20:54:38', '2018-08-07', 0, 30000, 2, 'archivos/09035414.png', 0, 'CE', 0, 1),
 (122345, '2018-10-14 15:05:02', '2018-10-30', 0, 90000, 2, 'archivos/14220596.pdf', 0, 'CE', 0, 1),
-(234567, '2018-10-07 10:32:19', '2018-10-09', 0, 50000, 2, 'archivos/07173250.jpg', 0, 'CE', 0, 1),
+(234567, '2018-10-07 10:32:19', '2018-10-18', 0, 50000, 2, 'archivos/07173250.jpg', 0, 'CE', 0, 1),
 (334567, '2018-10-14 15:06:56', '2018-10-30', 0, 4000, 2, 'archivos/14220682.pdf', 0, 'CE', 0, 1);
 
 -- --------------------------------------------------------
@@ -619,6 +645,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
+-- Indices de la tabla `area`
+--
+ALTER TABLE `area`
+  ADD PRIMARY KEY (`idarea`);
+
+--
 -- Indices de la tabla `bancos`
 --
 ALTER TABLE `bancos`
@@ -640,6 +672,13 @@ ALTER TABLE `caja`
 ALTER TABLE `caja_conceptos_generales`
   ADD PRIMARY KEY (`id`),
   ADD KEY `nombre` (`nombre`);
+
+--
+-- Indices de la tabla `centro_area`
+--
+ALTER TABLE `centro_area`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_area_centro_costos` (`idarea`);
 
 --
 -- Indices de la tabla `centro_costos`
@@ -777,6 +816,12 @@ ALTER TABLE `caja_conceptos_generales`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `centro_area`
+--
+ALTER TABLE `centro_area`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `centro_costos`
 --
 ALTER TABLE `centro_costos`
@@ -851,6 +896,12 @@ ALTER TABLE `usuarios`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `centro_area`
+--
+ALTER TABLE `centro_area`
+  ADD CONSTRAINT `fk_area_centro_costos` FOREIGN KEY (`idarea`) REFERENCES `area` (`idarea`);
 
 --
 -- Filtros para la tabla `ciudades`
