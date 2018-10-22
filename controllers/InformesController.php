@@ -14,6 +14,7 @@ use app\models\User;
 use yii\db\ActiveQuery;
 use kartik\mpdf\Pdf;
 use app\models\CentroCostos;
+use app\models\Area;
 /**
  * TercerosController implements the CRUD actions for Terceros model.
  */
@@ -74,7 +75,7 @@ class InformesController extends Controller
      */
     public function actionIndex()
     {
-        $model = new Informes();
+        $model = new Informes(['scenario' => 'informe']);
 $datos= array();
 if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
 {
@@ -348,6 +349,36 @@ if ($model->load(Yii::$app->request->post()))
             ]);
     }
 
+
+public function actionCreate()
+{
+
+     $model = new Informes( ['scenario' => 'create']);
+     $data=$this->getareas();
+     if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return ActiveForm::validate($model);
+    }
+    if ($model->load(Yii::$app->request->post()))
+    {   
+        if($model->validate())
+        {           
+            $contenido=$this->cabecera($model->fecha_inicio,$model->fecha_fin);            
+            $contenido.='<tbody></tbody></table>';
+            return $this->render('informe', [
+                    'model' => $model,
+                    'contenido'=>$contenido
+                   
+            ]);
+       } 
+    }
+    $contenido='prueba';
+    return $this->render('informe', [
+                       'contenido'=>$contenido,
+                       'model' => $model
+            ]);
+}
     /**
      * Displays a single Terceros model.
      * @param string $id
@@ -359,6 +390,42 @@ if ($model->load(Yii::$app->request->post()))
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+public function cabecera($fecha_inicio,$fecha_fin)
+{
+    $inicio=explode("-", $fecha_inicio);
+    $fin=explode("-", $fecha_fin);
+    $contenido='<table class="table"><thead><tr>';
+    if($inicio[0]==$fin[0])
+    {
+        for ($i=$inicio[1]; $i <=$fin[1] ; $i++) { 
+            $mes=  $this->mes($i);
+            $contenido.='<th scope="col">'.$mes.' de '.$fin[0].'</th>';
+     
+                }
+     $contenido.='</tr></thead>';    
+    }
+    else{
+        for ($i=$inicio[1]; $i <=12 ; $i++) { 
+            $mes=  $this->mes($i);
+            $contenido.='<th scope="col">'.$mes.' DEL '.$inicio[0].'</th>';     
+                }
+        for ($i=1; $i <=$fin[1] ; $i++) { 
+            $mes=  $this->mes($i);
+            $contenido.='<th scope="col">'.$mes.' DEL '.$fin[0].'</th>';     
+                }    
+
+    }
+     return $contenido;
+    
+}
+public function getareas()
+{
+   $query = Area::find();
+   $query->where('idanulo=0')->asArray()->all();
+   return $query;
+    
+}
+
 public function mes($fecha)
 {
     if($fecha==13){$fecha=1;}

@@ -43,6 +43,7 @@ if ($session->isActive){
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Informe', 'url' => ['/informes/index']],
+             ['label' => 'Informe prueba', 'url' => ['/informes/create']],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
             ['label' => '<span class="glyphicon glyphicon-headphones"></span> Terceros',

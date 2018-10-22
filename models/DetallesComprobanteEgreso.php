@@ -49,8 +49,8 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[ 'valor','idtercero', 'idconcepto', 'adjunto', 'subtotal', 'total','contraparte'], 'required'],
-            [['idtercero', 'idcomprobanteegreso', 'idconcepto'], 'integer'],
+            [[ 'valor','idtercero', 'idconcepto', 'adjunto', 'subtotal', 'total','contraparte','idarea','idcentrocosto'], 'required'],
+            [['idtercero', 'idcomprobanteegreso', 'idconcepto','idarea','idcentrocosto'], 'integer'],
             [['valor', 'subtotal', 'total'], 'number'],
             [['adjobligatorio'],'required','on'=>'create'],
             [['fechacreacion'], 'safe'],
@@ -88,6 +88,8 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             'adjunto' => 'Adjunto',
             'subtotal' => 'Retención',
             'total' => 'Total',
+            'idarea'=>'Area',
+            'idcentrocosto'=>'centro costo',
             'cedulatercero'=>'Identificacion Tercero'
         ];
     }
@@ -249,5 +251,14 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     public function getTercero()
     {
         return $this->hasOne(Terceros::className(), ['idtercero' => 'idtercero']);
+    }
+
+     public function getArea()
+    {
+        return $this->hasOne(Area::className(), ['idarea' => 'idarea']);
+    }
+     public function getCentrocosto()
+    {
+        return $this->hasOne(CentroArea::className(), ['id' => 'idcentrocosto']);
     }
 }

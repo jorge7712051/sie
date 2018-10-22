@@ -65,4 +65,9 @@ class Area extends \yii\db\ActiveRecord
     {
         return $this->hasMany(CentroArea::className(), ['idarea' => 'idarea']);
     }
+
+    public function getDetalleReciboCajas()
+    {
+        return $this->hasMany(DetalleComprobanteEgreso::className(), ['idarea' => 'idarea']);
+    }
 }

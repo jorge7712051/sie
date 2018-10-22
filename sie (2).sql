@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-10-2018 a las 05:42:54
+-- Tiempo de generación: 22-10-2018 a las 05:31:41
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.7
 
@@ -34,6 +34,14 @@ CREATE TABLE `area` (
   `idanulo` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `area`
+--
+
+INSERT INTO `area` (`idarea`, `nombre`, `idanulo`) VALUES
+(1, 'MISIONES', 0),
+(2, 'LITURGIA', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -57,7 +65,9 @@ INSERT INTO `bancos` (`id`, `valor_ingreso`, `valor_egreso`, `idcomprobante`, `i
 (1, 70000, 0, NULL, 2, 0),
 (2, 0, 20000, 2, NULL, 0),
 (3, 0, 100000, NULL, 3, 0),
-(4, 30000, 0, 3, NULL, 0);
+(4, 30000, 0, 3, NULL, 0),
+(6, 0, 33000, 7, NULL, 0),
+(7, 0, 307000, 9, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -87,7 +97,8 @@ INSERT INTO `caja` (`id`, `valor_ingreso`, `valor_egreso`, `fecha`, `idcomproban
 (6, 0, 30000, NULL, 3, NULL, 0),
 (7, 0, 30000, NULL, 1, NULL, 0),
 (8, 0, 90000, NULL, 4, NULL, 0),
-(9, 0, 4000, NULL, 5, NULL, 0);
+(9, 0, 4000, NULL, 5, NULL, 0),
+(11, 0, 33000, NULL, 8, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -114,6 +125,14 @@ CREATE TABLE `centro_area` (
   `idarea` int(11) NOT NULL,
   `idanulo` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `centro_area`
+--
+
+INSERT INTO `centro_area` (`id`, `nombre`, `descripcion`, `idarea`, `idanulo`) VALUES
+(1, 'NUEVAS COMUNIDADES', 'prueba', 1, 0),
+(2, 'DIRECCION CULTO', 'prueba 2', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -180,6 +199,8 @@ CREATE TABLE `comprobante_banco` (
 ,`valor_d` double
 ,`idconcepto` int(11)
 ,`subtotal` double
+,`area` int(11)
+,`centrocosto` int(11)
 ,`total` double
 ,`valor_egreso` bigint(20)
 ,`valor_ingreso` bigint(20)
@@ -204,6 +225,8 @@ CREATE TABLE `comprobante_caja` (
 ,`anulado` int(11)
 ,`alta` int(11)
 ,`idtercero` bigint(20)
+,`area` int(11)
+,`centrocosto` int(11)
 ,`valor_d` double
 ,`idconcepto` int(11)
 ,`subtotal` double
@@ -239,7 +262,9 @@ CREATE TABLE `comprobante_egreso` (
 INSERT INTO `comprobante_egreso` (`idcomprobante`, `fecha_creacion`, `fecha`, `bloqueo`, `valor`, `idcentrocostos`, `adjunto`, `idanulo`, `codigo`, `anulado`, `alta`) VALUES
 (111111, '2018-10-08 20:54:38', '2018-08-07', 0, 30000, 2, 'archivos/09035414.png', 0, 'CE', 0, 1),
 (122345, '2018-10-14 15:05:02', '2018-10-30', 0, 90000, 2, 'archivos/14220596.pdf', 0, 'CE', 0, 1),
+(232323, '2018-10-20 21:04:28', '2018-10-22', 0, 340000, 1, 'archivos/21040432.jpg', 0, 'CE', 0, 1),
 (234567, '2018-10-07 10:32:19', '2018-10-18', 0, 50000, 2, 'archivos/07173250.jpg', 0, 'CE', 0, 1),
+(330333, '2018-10-20 21:04:05', '2018-10-22', 0, 33000, 1, 'archivos/21040426.jpg', 0, 'CE', 0, 1),
 (334567, '2018-10-14 15:06:56', '2018-10-30', 0, 4000, 2, 'archivos/14220682.pdf', 0, 'CE', 0, 1);
 
 -- --------------------------------------------------------
@@ -308,19 +333,24 @@ CREATE TABLE `detalles_comprobante_egreso` (
   `fechacreacion` datetime NOT NULL,
   `adjunto` varchar(400) COLLATE utf8_spanish_ci NOT NULL,
   `subtotal` double NOT NULL,
-  `total` double NOT NULL
+  `total` double NOT NULL,
+  `idarea` int(11) NOT NULL,
+  `idcentrocosto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `detalles_comprobante_egreso`
 --
 
-INSERT INTO `detalles_comprobante_egreso` (`iddetalle`, `idtercero`, `valor`, `idcomprobanteegreso`, `idconcepto`, `fechacreacion`, `adjunto`, `subtotal`, `total`) VALUES
-(1, 2, 30000, 234567, 2, '2018-10-07 10:33:10', 'archivos/07173374.jpg', 1800, 28200),
-(2, 3, 20000, 234567, 3, '2018-10-07 10:33:48', 'archivos/07173396.png', 0, 20000),
-(3, 3, 30000, 111111, 3, '2018-10-08 20:55:13', 'archivos/09035559.pdf', 0, 30000),
-(4, 101, 90000, 122345, 4, '2018-10-14 15:06:24', 'archivos/14220694.pdf', 0, 90000),
-(5, 101, 4000, 334567, 5, '2018-10-14 15:07:19', 'archivos/sinarchivo.png', 0, 4000);
+INSERT INTO `detalles_comprobante_egreso` (`iddetalle`, `idtercero`, `valor`, `idcomprobanteegreso`, `idconcepto`, `fechacreacion`, `adjunto`, `subtotal`, `total`, `idarea`, `idcentrocosto`) VALUES
+(1, 2, 30000, 234567, 2, '2018-10-07 10:33:10', 'archivos/07173374.jpg', 1800, 28200, 1, 1),
+(2, 3, 20000, 234567, 3, '2018-10-07 10:33:48', 'archivos/07173396.png', 0, 20000, 1, 1),
+(3, 3, 30000, 111111, 3, '2018-10-08 20:55:13', 'archivos/09035559.pdf', 0, 30000, 2, 2),
+(4, 101, 90000, 122345, 4, '2018-10-14 15:06:24', 'archivos/14220694.pdf', 0, 90000, 1, 1),
+(5, 101, 4000, 334567, 5, '2018-10-14 15:07:19', 'archivos/sinarchivo.png', 0, 4000, 2, 2),
+(7, 99, 33000, 232323, 6, '2018-10-20 21:08:46', 'archivos/sinarchivo.png', 0, 33000, 1, 1),
+(8, 2, 33000, 330333, 1, '2018-10-20 21:14:38', 'archivos/21041499.jpg', 0, 330000, 2, 2),
+(9, 3, 307000, 232323, 6, '2018-10-20 21:16:48', 'archivos/sinarchivo.png', 0, 307000, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -611,7 +641,7 @@ INSERT INTO `usuarios` (`id`, `username`, `password`, `email`, `nombrecompleto`,
 --
 DROP TABLE IF EXISTS `comprobante_banco`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comprobante_banco`  AS  select `ce`.`idcomprobante` AS `idcomprobante`,`ce`.`fecha_creacion` AS `fecha_creacion`,`ce`.`fecha` AS `fecha`,`ce`.`bloqueo` AS `bloqueo`,`ce`.`valor` AS `valor`,`ce`.`idcentrocostos` AS `idcentrocostos`,`ce`.`adjunto` AS `adjunto`,`ce`.`idanulo` AS `idanulo`,`ce`.`codigo` AS `codigo`,`ce`.`anulado` AS `anulado`,`ce`.`alta` AS `alta`,`dc`.`idtercero` AS `idtercero`,`dc`.`valor` AS `valor_d`,`dc`.`idconcepto` AS `idconcepto`,`dc`.`subtotal` AS `subtotal`,`dc`.`total` AS `total`,`b`.`valor_egreso` AS `valor_egreso`,`b`.`valor_ingreso` AS `valor_ingreso` from ((`comprobante_egreso` `ce` join `detalles_comprobante_egreso` `dc` on((`ce`.`idcomprobante` = `dc`.`idcomprobanteegreso`))) join `bancos` `b` on((`dc`.`iddetalle` = `b`.`idcomprobante`))) where (`ce`.`alta` = 1) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comprobante_banco`  AS  select `ce`.`idcomprobante` AS `idcomprobante`,`ce`.`fecha_creacion` AS `fecha_creacion`,`ce`.`fecha` AS `fecha`,`ce`.`bloqueo` AS `bloqueo`,`ce`.`valor` AS `valor`,`ce`.`idcentrocostos` AS `idcentrocostos`,`ce`.`adjunto` AS `adjunto`,`ce`.`idanulo` AS `idanulo`,`ce`.`codigo` AS `codigo`,`ce`.`anulado` AS `anulado`,`ce`.`alta` AS `alta`,`dc`.`idtercero` AS `idtercero`,`dc`.`valor` AS `valor_d`,`dc`.`idconcepto` AS `idconcepto`,`dc`.`subtotal` AS `subtotal`,`dc`.`idarea` AS `area`,`dc`.`idcentrocosto` AS `centrocosto`,`dc`.`total` AS `total`,`b`.`valor_egreso` AS `valor_egreso`,`b`.`valor_ingreso` AS `valor_ingreso` from ((`comprobante_egreso` `ce` join `detalles_comprobante_egreso` `dc` on((`ce`.`idcomprobante` = `dc`.`idcomprobanteegreso`))) join `bancos` `b` on((`dc`.`iddetalle` = `b`.`idcomprobante`))) where (`ce`.`alta` = 1) ;
 
 -- --------------------------------------------------------
 
@@ -620,7 +650,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `comprobante_caja`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comprobante_caja`  AS  select `ce`.`idcomprobante` AS `idcomprobante`,`ce`.`fecha_creacion` AS `fecha_creacion`,`ce`.`fecha` AS `fecha`,`ce`.`bloqueo` AS `bloqueo`,`ce`.`valor` AS `valor`,`ce`.`idcentrocostos` AS `idcentrocostos`,`ce`.`adjunto` AS `adjunto`,`ce`.`idanulo` AS `idanulo`,`ce`.`codigo` AS `codigo`,`ce`.`anulado` AS `anulado`,`ce`.`alta` AS `alta`,`dc`.`idtercero` AS `idtercero`,`dc`.`valor` AS `valor_d`,`dc`.`idconcepto` AS `idconcepto`,`dc`.`subtotal` AS `subtotal`,`dc`.`total` AS `total`,`c`.`valor_egreso` AS `valor_egreso`,`c`.`valor_ingreso` AS `valor_ingreso` from ((`comprobante_egreso` `ce` join `detalles_comprobante_egreso` `dc` on((`ce`.`idcomprobante` = `dc`.`idcomprobanteegreso`))) join `caja` `c` on((`dc`.`iddetalle` = `c`.`idcomprobante`))) where (`ce`.`alta` = 1) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comprobante_caja`  AS  select `ce`.`idcomprobante` AS `idcomprobante`,`ce`.`fecha_creacion` AS `fecha_creacion`,`ce`.`fecha` AS `fecha`,`ce`.`bloqueo` AS `bloqueo`,`ce`.`valor` AS `valor`,`ce`.`idcentrocostos` AS `idcentrocostos`,`ce`.`adjunto` AS `adjunto`,`ce`.`idanulo` AS `idanulo`,`ce`.`codigo` AS `codigo`,`ce`.`anulado` AS `anulado`,`ce`.`alta` AS `alta`,`dc`.`idtercero` AS `idtercero`,`dc`.`idarea` AS `area`,`dc`.`idcentrocosto` AS `centrocosto`,`dc`.`valor` AS `valor_d`,`dc`.`idconcepto` AS `idconcepto`,`dc`.`subtotal` AS `subtotal`,`dc`.`total` AS `total`,`c`.`valor_egreso` AS `valor_egreso`,`c`.`valor_ingreso` AS `valor_ingreso` from ((`comprobante_egreso` `ce` join `detalles_comprobante_egreso` `dc` on((`ce`.`idcomprobante` = `dc`.`idcomprobanteegreso`))) join `caja` `c` on((`dc`.`iddetalle` = `c`.`idcomprobante`))) where (`ce`.`alta` = 1) ;
 
 -- --------------------------------------------------------
 
@@ -678,7 +708,7 @@ ALTER TABLE `caja_conceptos_generales`
 --
 ALTER TABLE `centro_area`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_area_centro_costos` (`idarea`);
+  ADD KEY `fk_area_costo` (`idarea`);
 
 --
 -- Indices de la tabla `centro_costos`
@@ -798,16 +828,22 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `area`
+--
+ALTER TABLE `area`
+  MODIFY `idarea` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `bancos`
 --
 ALTER TABLE `bancos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `caja`
 --
 ALTER TABLE `caja`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `caja_conceptos_generales`
@@ -819,7 +855,7 @@ ALTER TABLE `caja_conceptos_generales`
 -- AUTO_INCREMENT de la tabla `centro_area`
 --
 ALTER TABLE `centro_area`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `centro_costos`
@@ -849,7 +885,7 @@ ALTER TABLE `departamento`
 -- AUTO_INCREMENT de la tabla `detalles_comprobante_egreso`
 --
 ALTER TABLE `detalles_comprobante_egreso`
-  MODIFY `iddetalle` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `iddetalle` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_recibo_caja`
@@ -901,7 +937,7 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `centro_area`
 --
 ALTER TABLE `centro_area`
-  ADD CONSTRAINT `fk_area_centro_costos` FOREIGN KEY (`idarea`) REFERENCES `area` (`idarea`);
+  ADD CONSTRAINT `fk_area_costo` FOREIGN KEY (`idarea`) REFERENCES `area` (`idarea`);
 
 --
 -- Filtros para la tabla `ciudades`

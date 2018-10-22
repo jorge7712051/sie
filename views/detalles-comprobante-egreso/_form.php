@@ -55,6 +55,10 @@ use yii\web\View;
 
     <?= $form->field($model, 'nombre')->textInput(['readonly'=> true]); ?>
 
+    <?= $form->field($model, 'idarea')->textInput(); ?>
+
+    <?= $form->field($model, 'idcentrocosto')->textInput(); ?>
+
     <?= $form->field($model, 'adjobligatorio')->hiddenInput(['readonly'=> true])->label(false); ?>
 
     <?= $form->field($model, 'idconcepto')->dropDownList(ArrayHelper::map(Concepto::find()->where('idanulo=0')->all(), 'idconcepto', 'concepto'),array( 'prompt'=>'Seleccione...')); ?>

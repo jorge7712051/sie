@@ -53,6 +53,7 @@ class ComposerStaticInitcc5310d486e6c2312178f3a53555c35f
             'kartik\\file\\' => 12,
             'kartik\\depdrop\\' => 15,
             'kartik\\datetime\\' => 16,
+            'kartik\\daterange\\' => 17,
             'kartik\\date\\' => 12,
             'kartik\\color\\' => 13,
             'kartik\\base\\' => 12,
@@ -220,6 +221,10 @@ class ComposerStaticInitcc5310d486e6c2312178f3a53555c35f
         'kartik\\datetime\\' => 
         array (
             0 => __DIR__ . '/..' . '/kartik-v/yii2-widget-datetimepicker',
+        ),
+        'kartik\\daterange\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-date-range',
         ),
         'kartik\\date\\' => 
         array (
