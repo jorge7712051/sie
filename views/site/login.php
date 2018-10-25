@@ -38,8 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ])->label('Recordarme') ?>
 
             <div class="form-group">
-                <div class="col-lg-offset-1 col-lg-11">
-                  <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                <div class="col-lg-offset-1 col-lg-10">
+                  <?= Html::submitButton('Incio sesion', ['class' => 'btn  btn-primary btn-block', 'name' => 'login-button']) ?>
                 </div>
             </div>
 
