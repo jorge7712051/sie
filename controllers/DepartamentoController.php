@@ -27,7 +27,7 @@ class DepartamentoController extends Controller
                 'rules' => [
                     [
                         //El administrador tiene permisos sobre las siguientes acciones
-                        'actions' => ['create', 'view','update','delete','index'],
+                        'actions' => ['create', 'view','update','delete','index','departamento'],
                         //Esta propiedad establece que tiene permisos
                         'allow' => true,
                         //Usuarios autenticados, el signo ? es para invitados
@@ -37,6 +37,20 @@ class DepartamentoController extends Controller
                         'matchCallback' => function ($rule, $action) {
                             //Llamada al método que comprueba si es un administrador
                             return User::isUserAdmin(Yii::$app->user->identity->id);
+                        },
+                    ],
+                    [
+                        //El administrador tiene permisos sobre las siguientes acciones
+                        'actions' => ['departamento'],
+                        //Esta propiedad establece que tiene permisos
+                        'allow' => true,
+                        //Usuarios autenticados, el signo ? es para invitados
+                        'roles' => ['@'],
+                        //Este método nos permite crear un filtro sobre la identidad del usuario
+                        //y así establecer si tiene permisos o no
+                        'matchCallback' => function ($rule, $action) {
+                            //Llamada al método que comprueba si es un administrador
+                            return User::isUserSimple(Yii::$app->user->identity->id);
                         },
                     ],
                     [
@@ -144,6 +158,21 @@ class DepartamentoController extends Controller
         $model->idanulo=1;
         $model->save();
         return $this->redirect(['index']);
+    }
+
+
+    public function actionDepartamento($id){
+        $rows = Departamento::find()->where(['idpais' => $id])->andWhere("idanulo=0")->all();
+         
+        if(count($rows)>0){
+            foreach($rows as $row){
+                echo "<option value='$row->id'>$row->nombre</option>";
+            }
+        }
+        else{
+            echo "<option>No existen departamentos</option>";
+        }
+        
     }
 
     /**

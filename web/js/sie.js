@@ -3,6 +3,7 @@ $(document).ready(inicializarEventos);
 function inicializarEventos()
 {
 	inicio();
+  cargarciudades();
 }
 function inicio()
 {
@@ -24,6 +25,19 @@ function formularioajax(idformulario)
 	});
     // tu codigo aqui
  
+}
+function cargarciudades(){
+  var id=$('#informes-idpais').val();
+  
+  $.ajax({
+      type: "GET",
+      url:"../departamento/departamento",
+      data: {id:id},
+      success : function(data) {
+      
+     $('#informes-iddepartamento').html( data );
+      }
+  });
 }
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -68,7 +82,10 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 	 }	
    
 });
-
+/*
+$('#informes-idarea').change(function() {
+        alert(this.value);
+    });*/
 
 $('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
 
@@ -102,6 +119,21 @@ $('#detallescomprobanteegreso-idconcepto').on('change', function() {
     	}
 	});
 });
+$('#informes-idpais').on('change',function(){
+  var id=$('#informes-idpais').val();
+  
+  $.ajax({
+      type: "GET",
+      url:"../departamento/departamento",
+      data: {id:id},
+      success : function(data) {
+      
+     $('#informes-iddepartamento').html( data );
+      }
+  });
+
+});
+
 
 $('#detallerecibocaja-idtipoingreso').on('change', function() {
   var idconcepto=this.value;

@@ -42,6 +42,7 @@ class Informes extends Model
     public $iddepartamento;
     public $idciudad;
     public $idarea;
+    public $centro_area;
 
     /**
      * {@inheritdoc}
@@ -51,9 +52,10 @@ class Informes extends Model
         return [
             [['centro_costos','fecha'], 'required','on' =>'informe'],
             [['fecha_inicio','fecha_fin','idpais','idarea'], 'required', 'on' =>'create'],
-            [['centro_costos','idciudad','iddepartamento'], 'integer'],
+            [['centro_costos'], 'integer','on' =>'informe'],
+            [['centro_area', 'iddepartamento','idciudad'], 'default'],
             ['fecha_inicio', 'compare', 'compareAttribute' => 'fecha_fin', 'operator' => '<='],
-            [['fecha'], 'safe'],            
+            [['fecha','centro_costos','idciudad','iddepartamento'], 'safe'],            
         ];
     }
 
@@ -63,12 +65,15 @@ class Informes extends Model
     public function attributeLabels()
     {
         return [
-            'centro_costos' => 'Centro de costos',
+            'centro_costos' => 'Iglesia',
             'fecha' => 'fecha',
             'fecha_inicio'      =>'Fceha inicio',
             'fecha_fin'      =>'Fecha fin',
             'idpais'=>'Pais',
-            'idarea'=>'Area'
+            'idarea'=>'Area',
+            'iddepartamento'=>'Departamento',
+            'idciudad'=>'Ciudad',
+            'centro_area'=>'Centro de costos'
         ];
     }
 

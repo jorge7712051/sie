@@ -109,6 +109,27 @@ class CentroAreaController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionCarea($id)
+    {
+        $p = explode("a", $id);
+        array_pop($p);
+        $rows=CentroArea::find()
+        ->where(['in', 'idarea', $p])
+        ->andWhere("idanulo=0")
+        ->all();
+        if(count($rows)>0){
+            foreach($rows as $row){
+                echo "<option value='$row->id'>$row->nombre</option>";
+            }
+        }
+        else{
+            echo "<option>No existen departamentos</option>";
+        }
+        
+
+      
+    }
+
     /**
      * Finds the CentroArea model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

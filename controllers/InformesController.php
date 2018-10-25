@@ -15,6 +15,8 @@ use yii\db\ActiveQuery;
 use kartik\mpdf\Pdf;
 use app\models\CentroCostos;
 use app\models\Area;
+use app\models\CentroArea;
+use yii\helpers\ArrayHelper;
 /**
  * TercerosController implements the CRUD actions for Terceros model.
  */
@@ -355,6 +357,7 @@ public function actionCreate()
 
      $model = new Informes( ['scenario' => 'create']);
      $data=$this->getareas();
+     
      if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -364,12 +367,12 @@ public function actionCreate()
     {   
         if($model->validate())
         {           
-            $contenido=$this->cabecera($model->fecha_inicio,$model->fecha_fin);            
-            $contenido.='<tbody></tbody></table>';
+            $contdate=$this->cabecera($model->fecha_inicio,$model->fecha_fin); 
+            $contenido =$contdate[0]['contenido'];
+            $contenido.=$this->cuerpo($contdate);            
             return $this->render('informe', [
                     'model' => $model,
-                    'contenido'=>$contenido
-                   
+                    'contenido'=>$contenido                   
             ]);
        } 
     }
@@ -392,38 +395,228 @@ public function actionCreate()
      */
 public function cabecera($fecha_inicio,$fecha_fin)
 {
+    $fecha_contenido=array();
     $inicio=explode("-", $fecha_inicio);
     $fin=explode("-", $fecha_fin);
-    $contenido='<table class="table"><thead><tr>';
+    $contenido='<table class="table table-bordered"><thead><tr><th>Nombres</th>';
+    $j=0;
     if($inicio[0]==$fin[0])
     {
         for ($i=$inicio[1]; $i <=$fin[1] ; $i++) { 
             $mes=  $this->mes($i);
             $contenido.='<th scope="col">'.$mes.' de '.$fin[0].'</th>';
-     
+            $fecha_contenido[$j]['mes']= $fin[0]."-".$i;
+            $j++;
                 }
-     $contenido.='</tr></thead>';    
+
+        $fecha_contenido[0]['contenido']= $contenido.='</tr></thead>';    
     }
     else{
         for ($i=$inicio[1]; $i <=12 ; $i++) { 
             $mes=  $this->mes($i);
-            $contenido.='<th scope="col">'.$mes.' DEL '.$inicio[0].'</th>';     
+            $contenido.='<th scope="col">'.$mes.' DEL '.$inicio[0].'</th>';
+            $fecha_contenido[$j]['mes']= $inicio[0]."-".$i;
+            $j++;   
                 }
         for ($i=1; $i <=$fin[1] ; $i++) { 
             $mes=  $this->mes($i);
-            $contenido.='<th scope="col">'.$mes.' DEL '.$fin[0].'</th>';     
+            $contenido.='<th scope="col">'.$mes.' DEL '.$fin[0].'</th>';
+            $fecha_contenido[$j]['mes']= $fin[0]."-".$i;
+            $j++;        
                 }    
-
+        $fecha_contenido[0]['contenido']= $contenido.='</tr></thead>';    
     }
-     return $contenido;
+     return $fecha_contenido;
     
+}
+
+public function cuerpo($contdate)
+{
+    $request = Yii::$app->request;
+    $post = $request->post(); 
+    $vectorareas=$post["Informes"]["idarea"];
+    $contenido.='<tbody>';  
+    foreach($vectorareas as $key => $value) 
+    {      
+        $area=$this->getcentrosareas($value);
+        foreach($area as $clave => $valor)    
+        {   
+                $contenido.='<tr>'; 
+                $contenido.='<th>'. $valor .'</th>';
+                $contenido.=$this->celdasarea($clave,$contdate,$post) ; 
+                if($post["Informes"]['centro_area']!=null)
+                {    
+                    $vectorcentros=$post["Informes"]['centro_area'];
+                    $contenido.=$this->celdascentroscosto($contdate,$clave,$vectorcentros,$post);
+                }
+        }
+    
+    }
+    $contenido.='</tbody></table>';
+    return $contenido;
+}
+
+public function getcentrosareas($idarea)
+{
+    $query= ArrayHelper::map(
+    Area::find()->where(['idanulo'=>'0'])->andWhere(['idarea'=>$idarea])->asArray()->all(),'idarea','nombre');
+    return $query;
+}
+public function celdasarea($idarea,$contdate,$post)
+{
+    $banco = [];
+    $caja=[] ;    
+    foreach ($contdate as $key) { 
+        $banco = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from('comprobante_banco as cb')
+        ->innerJoin('centro_costos as cc','cb.idcentrocostos=cc.idcentrocostos')
+        ->innerJoin('ciudades as ci','cc.idciudad=ci.idciudad')
+        ->innerJoin('departamento as de','ci.iddepartamento=de.id')
+        ->innerJoin('pais as pa','de.idpais=pa.id')
+        ->where('cb.area='.$idarea)        
+        ->andWhere("cb.fecha >='".$key['mes']."-01'")
+        ->andWhere("cb.fecha <='".$key['mes']."-30'");                  
+        if($post["Informes"]['idpais']!=null){
+            $banco->andWhere('pa.id='.$post["Informes"]['idpais']);    
+        }
+        if($post["Informes"]['iddepartamento']!=null){
+            $banco->andWhere(['in', 'de.id', $post["Informes"]['iddepartamento']]);
+        }
+        if($post["Informes"]['idciudad']!=null){
+            $banco->andWhere(['in', 'cc.idciudad', $post["Informes"]['idciudad']]);
+        }
+        if($post["Informes"]['centro_costos']!=null){
+            $banco->andWhere(['in', 'cc.idcentrocostos', $post["Informes"]['centro_costos']]);
+        }
+        $rb=$banco->sum('cb.valor_egreso');  
+        $caja = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from('comprobante_caja as cb')
+        ->innerJoin('centro_costos as cc','cb.idcentrocostos=cc.idcentrocostos')
+        ->innerJoin('ciudades as ci','cc.idciudad=ci.idciudad')
+        ->innerJoin('departamento as de','ci.iddepartamento=de.id')
+        ->innerJoin('pais as pa','de.idpais=pa.id')
+        ->where('cb.area='.$idarea)        
+        ->andWhere("cb.fecha >='".$key['mes']."-01'")
+        ->andWhere("cb.fecha <='".$key['mes']."-30'");
+        if($post["Informes"]['idpais']!=null){
+            $caja->andWhere('pa.id='.$post["Informes"]['idpais']);    
+        }
+        if($post["Informes"]['iddepartamento']!=null){
+            $caja->andWhere(['in', 'de.id', $post["Informes"]['iddepartamento']]);
+        }
+        if($post["Informes"]['idciudad']!=null){
+            $caja->andWhere(['in', 'cc.idciudad', $post["Informes"]['idciudad']]);
+        }
+        if($post["Informes"]['centro_costos']!=null){
+            $caja->andWhere(['in', 'cc.idcentrocostos', $post["Informes"]['centro_costos']]);
+        }
+        $rc=$caja->sum('cb.valor_egreso');        
+        
+        if($rb==null)
+        {
+            $rb= 0;
+        }
+        if($rc==null)
+        {
+            $rc= 0;
+        }
+        $resultado=$rb+$rc;
+        $contenido.='<th>'. $resultado .'</th>';
+    }
+   
+        $contenido.='</tr>'; 
+    
+    return $contenido;   
+}
+public function getcentros($vectorcentros,$idarea)
+{
+    $query= ArrayHelper::map(CentroArea::find()
+        ->where(['in', 'id', $vectorcentros])
+        ->andWhere(['idanulo'=>'0'])
+        ->andWhere(['idarea'=>$idarea])
+        ->asArray()->all(),'id','nombre');
+    return $query; 
+}
+public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
+{
+    $centroarea=$this->getcentros($vectorcentros,$idarea);
+    $banco = []; 
+    $caja = []; 
+    foreach($centroarea as $clave => $valor) {
+        $contenido.='<tr>'; 
+        $contenido.='<th>'. $valor .'</th>';
+        foreach ($contdate as $key) { 
+        $banco = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from('comprobante_banco as cb')
+        ->innerJoin('centro_costos as cc','cb.idcentrocostos=cc.idcentrocostos')
+        ->innerJoin('ciudades as ci','cc.idciudad=ci.idciudad')
+        ->innerJoin('departamento as de','ci.iddepartamento=de.id')
+        ->innerJoin('pais as pa','de.idpais=pa.id')
+        ->where('cb.centrocosto='.$clave)
+        ->andWhere("area =".$idarea)        
+        ->andWhere("fecha >='".$key['mes']."-01'")
+        ->andWhere("fecha <='".$key['mes']."-30'");
+        if($post["Informes"]['idpais']!=null){
+            $banco->andWhere('pa.id='.$post["Informes"]['idpais']);    
+        }
+        if($post["Informes"]['iddepartamento']!=null){
+            $banco->andWhere(['in', 'de.id', $post["Informes"]['iddepartamento']]);
+        }
+        if($post["Informes"]['idciudad']!=null){
+            $banco->andWhere(['in', 'cc.idciudad', $post["Informes"]['idciudad']]);
+        } 
+        if($post["Informes"]['centro_costos']!=null){
+            $banco->andWhere(['in', 'cc.idcentrocostos', $post["Informes"]['centro_costos']]);
+        }    
+        $rb=$banco->sum('valor_egreso');
+        $caja = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from('comprobante_caja as cb')
+        ->innerJoin('centro_costos as cc','cb.idcentrocostos=cc.idcentrocostos')
+        ->innerJoin('ciudades as ci','cc.idciudad=ci.idciudad')
+        ->innerJoin('departamento as de','ci.iddepartamento=de.id')
+        ->innerJoin('pais as pa','de.idpais=pa.id')
+        ->where('cb.centrocosto='.$clave)
+        ->andWhere("cb.area =".$idarea)        
+        ->andWhere("cb.fecha >='".$key['mes']."-01'")
+        ->andWhere("cb.fecha <='".$key['mes']."-30'");
+        if($post["Informes"]['idpais']!=null){
+            $caja->andWhere('pa.id='.$post["Informes"]['idpais']);    
+        }
+        if($post["Informes"]['iddepartamento']!=null){
+            $caja->andWhere(['in', 'de.id', $post["Informes"]['iddepartamento']]);
+        }
+        if($post["Informes"]['idciudad']!=null){
+            $caja->andWhere(['in', 'cc.idciudad', $post["Informes"]['idciudad']]);
+        }
+        if($post["Informes"]['centro_costos']!=null){
+            $caja->andWhere(['in', 'cc.idcentrocostos', $post["Informes"]['centro_costos']]);
+        }   
+        $rc=$caja->sum('valor_egreso');
+        if($rb==null)
+        {
+            $rb= 0;
+        }
+        if($rc==null)
+        {
+            $rc= 0;
+        }
+        $resultado=$rb+$rc;
+        $contenido.='<th>'. $resultado .'</th>';
+      
+        }
+        $contenido.='</tr>'; 
+    }
+    return $contenido;
 }
 public function getareas()
 {
    $query = Area::find();
    $query->where('idanulo=0')->asArray()->all();
-   return $query;
-    
+   return $query;    
 }
 
 public function mes($fecha)
@@ -433,7 +626,7 @@ public function mes($fecha)
     switch($fecha) {
             case "01" : $mes= "ENERO";
                         break;
-            case "02" : $mes= "FEBREROS";
+            case "02" : $mes= "FEBRERO";
                         break;
             case "03" : $mes= "MARZO";
                         break;

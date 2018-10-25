@@ -42,8 +42,13 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Informe', 'url' => ['/informes/index']],
-             ['label' => 'Informe prueba', 'url' => ['/informes/create']],
+            [   'label' => 'Informes',
+                'items' => [
+                    ['label' => 'Informe Mensual', 'url' => ['/informes/index']],
+                    ['label' => 'Informe Areas', 'url' => ['/informes/create']],
+                ],
+
+            ],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
             ['label' => '<span class="glyphicon glyphicon-headphones"></span> Terceros',
@@ -113,7 +118,14 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Informe', 'url' => ['/informes/index']],
+
+            [   'label' => 'Informes',
+                'items' => [
+                    ['label' => 'Informe Mensual', 'url' => ['/informes/index']],
+                    ['label' => 'Informe Areas', 'url' => ['/informes/create']],
+                ],
+
+            ],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
             //['label' => 'About', 'url' => ['/site/about']],

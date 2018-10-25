@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-
+use app\models\Departamento;
 /* @var $this yii\web\View */
 /* @var $model app\models\Ciudades */
 
@@ -30,7 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'idciudad',
             'ciudad',
-            'iddepartamento',
+          
+            [
+                'attribute'=>'iddepartamento',
+                'value'=>function($model){
+                    $departamento= Departamento::findOne($model->iddepartamento);
+                    return $departamento->nombre;
+                }
+            ],
             //'idanulo',
         ],
     ]) ?>

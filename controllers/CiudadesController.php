@@ -27,7 +27,7 @@ class CiudadesController extends Controller
                 'rules' => [
                     [
                         //El administrador tiene permisos sobre las siguientes acciones
-                        'actions' => ['create', 'contact','view','update','delete','index'],
+                        'actions' => ['create', 'contact','view','update','delete','index','ciudad'],
                         //Esta propiedad establece que tiene permisos
                         'allow' => true,
                         //Usuarios autenticados, el signo ? es para invitados
@@ -39,6 +39,20 @@ class CiudadesController extends Controller
                             return User::isUserAdmin(Yii::$app->user->identity->id);
                         },
                     ],
+                      [
+                       //Los usuarios simples tienen permisos sobre las siguientes acciones
+                       'actions' => ['ciudad'],
+                       //Esta propiedad establece que tiene permisos
+                       'allow' => true,
+                       //Usuarios autenticados, el signo ? es para invitados
+                       'roles' => ['@'],
+                       //Este método nos permite crear un filtro sobre la identidad del usuario
+                       //y así establecer si tiene permisos o no
+                       'matchCallback' => function ($rule, $action) {
+                          //Llamada al método que comprueba si es un usuario simple
+                          return User::isUserSimple(Yii::$app->user->identity->id);
+                      },
+                   ],
                     [
                        //Los usuarios simples tienen permisos sobre las siguientes acciones
                        'actions' => ['create', 'view','update','delete','index'],
@@ -149,6 +163,22 @@ class CiudadesController extends Controller
         $this->findModelDelete($id);
         return $this->redirect(['index']);
         
+    }
+
+    public function actionCiudad($id)
+    {
+        $p = explode("a", $id);
+        array_pop($p);
+        $rows=Ciudades::find()
+        ->where(['in', 'iddepartamento', $p])->andWhere("idanulo=0")->all();
+        if(count($rows)>0){
+            foreach($rows as $row){
+                echo "<option value='$row->idciudad'>$row->ciudad</option>";
+            }
+        }
+        else{
+            echo "<option>No existen ciudades</option>";
+        }
     }
 
     /**
