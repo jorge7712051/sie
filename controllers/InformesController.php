@@ -442,7 +442,7 @@ public function cuerpo($contdate)
         foreach($area as $clave => $valor)    
         {   
                 $contenido.='<tr>'; 
-                $contenido.='<th>'. $valor .'</th>';
+                $contenido.='<td>'. $valor .'</td>';
                 $contenido.=$this->celdasarea($clave,$contdate,$post) ; 
                 if($post["Informes"]['centro_area']!=null)
                 {    
@@ -523,7 +523,7 @@ public function celdasarea($idarea,$contdate,$post)
             $rc= 0;
         }
         $resultado=$rb+$rc;
-        $contenido.='<th>'. $resultado .'</th>';
+        $contenido.='<td>'. $resultado .'</td>';
     }
    
         $contenido.='</tr>'; 
@@ -546,7 +546,7 @@ public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
     $caja = []; 
     foreach($centroarea as $clave => $valor) {
         $contenido.='<tr>'; 
-        $contenido.='<th>'. $valor .'</th>';
+        $contenido.='<td>'. $valor .'</td>';
         foreach ($contdate as $key) { 
         $banco = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
@@ -605,7 +605,7 @@ public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
             $rc= 0;
         }
         $resultado=$rb+$rc;
-        $contenido.='<th>'. $resultado .'</th>';
+        $contenido.='<td>'. $resultado .'</td>';
       
         }
         $contenido.='</tr>'; 
