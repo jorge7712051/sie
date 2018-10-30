@@ -370,11 +370,9 @@ public function actionCreate()
             $contdate=$this->cabecera($model->fecha_inicio,$model->fecha_fin); 
             $contenido =$contdate[0]['contenido'];
             $contenido.=$this->cuerpo($contdate);            
-            return $this->render('informe', [
-                    'model' => $model,
-                    'contenido'=>$contenido                   
-            ]);
-       } 
+            $pdf=$this->generarpdfarea($contenido);
+            return $pdf->render();
+        } 
     }
     $contenido='prueba';
     return $this->render('informe', [
@@ -404,7 +402,7 @@ public function cabecera($fecha_inicio,$fecha_fin)
     {
         for ($i=$inicio[1]; $i <=$fin[1] ; $i++) { 
             $mes=  $this->mes($i);
-            $contenido.='<th scope="col">'.$mes.' de '.$fin[0].'</th>';
+            $contenido.='<th scope="col">'.$mes.' '.$fin[0].'</th>';
             $fecha_contenido[$j]['mes']= $fin[0]."-".$i;
             $j++;
                 }
@@ -414,13 +412,13 @@ public function cabecera($fecha_inicio,$fecha_fin)
     else{
         for ($i=$inicio[1]; $i <=12 ; $i++) { 
             $mes=  $this->mes($i);
-            $contenido.='<th scope="col">'.$mes.' DEL '.$inicio[0].'</th>';
+            $contenido.='<th scope="col">'.$mes.' '.$inicio[0].'</th>';
             $fecha_contenido[$j]['mes']= $inicio[0]."-".$i;
             $j++;   
                 }
         for ($i=1; $i <=$fin[1] ; $i++) { 
             $mes=  $this->mes($i);
-            $contenido.='<th scope="col">'.$mes.' DEL '.$fin[0].'</th>';
+            $contenido.='<th scope="col">'.$mes.' '.$fin[0].'</th>';
             $fecha_contenido[$j]['mes']= $fin[0]."-".$i;
             $j++;        
                 }    
@@ -435,13 +433,13 @@ public function cuerpo($contdate)
     $request = Yii::$app->request;
     $post = $request->post(); 
     $vectorareas=$post["Informes"]["idarea"];
-    $contenido.='<tbody>';  
+    $contenido='<tbody>';  
     foreach($vectorareas as $key => $value) 
     {      
         $area=$this->getcentrosareas($value);
         foreach($area as $clave => $valor)    
         {   
-                $contenido.='<tr>'; 
+                $contenido.='<tr class="azul">'; 
                 $contenido.='<td>'. $valor .'</td>';
                 $contenido.=$this->celdasarea($clave,$contdate,$post) ; 
                 if($post["Informes"]['centro_area']!=null)
@@ -465,7 +463,8 @@ public function getcentrosareas($idarea)
 public function celdasarea($idarea,$contdate,$post)
 {
     $banco = [];
-    $caja=[] ;    
+    $caja=[] ;
+    $contenido='';  
     foreach ($contdate as $key) { 
         $banco = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
@@ -543,7 +542,8 @@ public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
 {
     $centroarea=$this->getcentros($vectorcentros,$idarea);
     $banco = []; 
-    $caja = []; 
+    $caja = [];
+    $contenido=''; 
     foreach($centroarea as $clave => $valor) {
         $contenido.='<tr>'; 
         $contenido.='<td>'. $valor .'</td>';
@@ -619,6 +619,13 @@ public function getareas()
    return $query;    
 }
 
+public function getdiezmo()
+{
+   $query = Area::find();
+   $query->where('idanulo=0')->asArray()->all();
+   return $query;    
+}
+
 public function mes($fecha)
 {
     if($fecha==13){$fecha=1;}
@@ -681,6 +688,37 @@ public function mes($fecha)
     .col-xs-offset-4 { margin-left: 33.33333333%;}
     .col-xs-9 { width: 75%;}
     .col-xs-8 {width: 66.66666667%;}',
+    'options' => ['title' => 'Krajee Report Title',                
+                'SetWatermarkImage'=>'../web/img/logo.png',
+                'showWatermarkText' => true,
+                'showWatermarkImage' => true,
+    ],
+     'methods' => [
+     'SetWatermarkText' => 'VERIFICADO',
+     'SetWatermarkImage' =>  '../web/img/logo.png',
+     'SetHeader'=>['Disipulos de cristo'],
+     'SetFooter'=>['{PAGENO}'],
+   ]
+ ]);
+ return $pdf; 
+}
+public function generarpdfarea($content)
+{
+    $pdf = new Pdf([
+    'mode' => Pdf::MODE_BLANK,
+    'filename' => 'reporte_' . date('d-m-Y_his') . '.pdf',
+    'format' => Pdf::FORMAT_A4,
+    'orientation' => Pdf::ORIENT_LANDSCAPE,
+    'destination' => Pdf::DEST_DOWNLOAD  ,   
+    'content' => $content,
+    'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+    'cssInline' => '.kv-heading-1{font-size:10px} h3,h5{ text-align: center; }
+    .table {width: 100%; max-width: 100%;    margin-bottom: 20px;}
+    .table-bordered { border: 1px solid #ddd;}
+    th {font-size: 11px;  border: 1px solid #ddd;  }
+    td {font-size: 11px;  border: 1px solid #ddd; }
+    .azul{background:#cce5ff;}
+',
     'options' => ['title' => 'Krajee Report Title',                
                 'SetWatermarkImage'=>'../web/img/logo.png',
                 'showWatermarkText' => true,
