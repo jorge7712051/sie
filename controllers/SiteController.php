@@ -20,8 +20,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public $defaultAction = 'login';
-
+    
     public function behaviors()
     {
         return [

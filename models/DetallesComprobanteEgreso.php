@@ -1,11 +1,8 @@
 <?php
-
 namespace app\models;
-
 use Yii;
 use app\models\Bancos;
 use app\models\Caja;
-
 /**
  * This is the model class for table "detalles_comprobante_egreso".
  *
@@ -42,7 +39,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     {
         return 'detalles_comprobante_egreso';
     }
-
     /**
      * {@inheritdoc}
      */
@@ -72,7 +68,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             [['idtercero'], 'exist', 'skipOnError' => true, 'targetClass' => Terceros::className(), 'targetAttribute' => ['idtercero' => 'idtercero']],
         ];
     }
-
     /**
      * {@inheritdoc}
      */
@@ -93,7 +88,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             'cedulatercero'=>'Identificacion Tercero'
         ];
     }
-
     public function validaradj($attribute, $params)
     {
         $a=0;
@@ -102,7 +96,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             return true;
         }
          
-
         $this->addError($attribute, "Adjunto es requerido");     
     }
     
@@ -122,7 +115,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
         }
         return false;
     }
-
     public function upload()
     {
         if ($this->validate()) {
@@ -132,8 +124,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             return false;
         }
     }
-
-
     public function afterSave($insert, $changedAttributes)
     {
     
@@ -217,13 +207,11 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
    
         return false;
     }
-
     public function getImageurl()
     {
         $ruta=Url::home(true);
         return $ruta.$this->adjunto;
     }
-
     public function getImagenDocumento()
     {
         $ruta=Url::home(true);
@@ -236,7 +224,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ComprobanteEgreso::className(), ['idcomprobante' => 'idcomprobanteegreso']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -244,7 +231,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Concepto::className(), ['idconcepto' => 'idconcepto']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -252,7 +238,6 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Terceros::className(), ['idtercero' => 'idtercero']);
     }
-
      public function getArea()
     {
         return $this->hasOne(Area::className(), ['idarea' => 'idarea']);

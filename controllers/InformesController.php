@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
 use app\models\User;
+use app\models\DiezmoPastores;
 use yii\db\ActiveQuery;
 use kartik\mpdf\Pdf;
 use app\models\CentroCostos;
@@ -93,6 +94,8 @@ if ($model->load(Yii::$app->request->post()))
     $nextmes=$fecha1[1]+1;
     $nextmes=$this->mes($nextmes);
     $mes=$this->mes($fecha1[1]);
+    $diesmomes=$this->getdiezmo($model->fecha,$model->centro_costos);
+    ($diesmomes==null)? $datos['diesmomes']=0 : $datos['diesmomes']=$diesmomes['0']['valor'];
     $nombre=$this->getcentrocostos($model->centro_costos);
     $datos['diezmo']=$this->ingresoscaja($model->fecha,'recibo_caja_caja',$model->centro_costos,'1');
     $datos['diezmobanco']=$this->ingresoscaja($model->fecha,'recibo_caja_banco',$model->centro_costos,'1');
@@ -339,6 +342,34 @@ if ($model->load(Yii::$app->request->post()))
         </div>
         <div class='col-xs-3 borde-abajo '>
             <span><strong>$ ".$datos['bancofinal']."</strong></span>
+        </div>
+    </div>
+    <br/>
+    <div class='row '>
+        <div class='col-xs-6'>
+            <span>DIEZMO PASTOR</span>
+        </div>
+        <div class='col-xs-6 borde-abajo '>
+            <span>$ ".$datos['diesmomes']."</span>
+        </div>
+    </div>
+     <br/>
+     <br/>
+
+    <div class='row '>
+        <div class='col-xs-6 centro'>
+            <span>______________________________________________</span>
+        </div>
+        <div class='col-xs-6 centro'>
+            <span>_______________________________________________</span>
+        </div>
+    </div>
+    <div class='row '>
+        <div class='col-xs-6 centro'>
+            <span>FIRMA PASTOR ADMINISTRADOR</span>
+        </div>
+        <div class='col-xs-6 centro'>
+            <span>FIRMA TESORERO(A)</span>
         </div>
     </div>
 ";
@@ -619,10 +650,16 @@ public function getareas()
    return $query;    
 }
 
-public function getdiezmo()
+public function getdiezmo($fecha,$centro)
 {
-   $query = Area::find();
-   $query->where('idanulo=0')->asArray()->all();
+   $query = DiezmoPastores::find()
+    ->innerJoin('pastores as p','p.cedula=idpastor')   
+    ->where("fecha >= ' ".$fecha."-01 '")
+    ->andWhere(" fecha <= '".$fecha."-30 '")
+    ->andWhere("p.centro_costo =".$centro)
+    ->asArray()->all();
+         
+   
    return $query;    
 }
 

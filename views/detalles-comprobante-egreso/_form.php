@@ -11,6 +11,7 @@ use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use app\models\Concepto;
 use app\models\Terceros;
+use app\models\Area;
 use yii\web\View;
 /* @var $this yii\web\View */
 /* @var $model app\models\DetallesComprobanteEgreso */
@@ -55,9 +56,24 @@ use yii\web\View;
 
     <?= $form->field($model, 'nombre')->textInput(['readonly'=> true]); ?>
 
-    <?= $form->field($model, 'idarea')->textInput(); ?>
+    <?php $estado = ArrayHelper::map(Area::find()->all(), 'idarea', 'nombre'); ?>
 
-    <?= $form->field($model, 'idcentrocosto')->textInput(); ?>
+
+    <?= $form->field($model, 'idarea')->dropDownList(
+                $estado,
+                [
+                    'prompt'=>'Selecione un area',
+                    'onchange'=>'
+                        $.get( "'.Url::toRoute('/centro-area/careac').'", { id: $(this).val() } )
+                            .done(function( data ) {
+                                $( "#'.Html::getInputId($model, 'idcentrocosto').'" ).html( data );
+                            }
+                        );
+                    '    
+                ]
+        );  ?>
+
+    <?= $form->field($model, 'idcentrocosto')->dropDownList(['prompt'=>'Selecione un centro de costos'])  ?>
 
     <?= $form->field($model, 'adjobligatorio')->hiddenInput(['readonly'=> true])->label(false); ?>
 
