@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute'=>'porcentaje',               
                 'value'=>function($model){ 
                     $valor=$model->porcentaje/100;
-                    return Yii::$app->formatter->asPercent($valor); 
+                    return Yii::$app->formatter->asPercent($valor,1); 
                 },
             ],
             [

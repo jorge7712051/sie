@@ -42,7 +42,8 @@ if ($session->isActive){
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            [   'label' => 'Informes',
+            [   'label' => '<span class="glyphicon glyphicon-file"></span> Informes',
+                'encode' => false,
                 'items' => [
                     ['label' => 'Informe Mensual', 'url' => ['/informes/index']],
                     ['label' => 'Informe Areas', 'url' => ['/informes/create']],
@@ -51,7 +52,7 @@ if ($session->isActive){
             ],
             ['label' => 'Recibo de caja', 'url' => ['/recibo-caja/index']],
             ['label' => 'Comprobante Egreso', 'url' => ['/comprobante-egreso/index']],
-            ['label' => '<span class="glyphicon glyphicon-headphones"></span> Terceros',
+            ['label' => '<span class="glyphicon glyphicon-user"></span> Terceros',
             'encode' => false,
             'items'=>[
                 ['label' => 'Pastores', 'url' => ['/pastores/index']],
@@ -59,7 +60,8 @@ if ($session->isActive){
                 ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
                     ],
             ],
-            ['label'=>'Datos Geograficos',
+            ['label'=>'<span class="glyphicon glyphicon-globe"></span> Datos Geograficos',
+             'encode' => false,
                 'items'=>[
                     ['label'=>'Pais','url'=>['/pais/index']],
                     ['label'=>'Departamento','url'=>['/departamento/index']],
@@ -67,7 +69,8 @@ if ($session->isActive){
                 ]            
 
             ],            
-            ['label' => 'Adicionales',
+            ['label' => '<span class="glyphicon glyphicon-cog"></span>  Adicionales',
+            'encode' => false,
              'items' => [
                 ['label' => 'Areas', 'url' => ['/area/index']],
                  ['label' => 'Centros de costos', 'url' => ['/centro-area/index']],                               
