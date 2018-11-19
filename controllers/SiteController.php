@@ -14,6 +14,7 @@ use app\models\Usuarios;
 use yii\web\Session;
 use app\models\FormRecoverPass;
 use app\models\FormResetPass;
+use yii\helpers\Url;
 
 class SiteController extends Controller
 {
@@ -26,22 +27,29 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['contact', 'about','logout'],
+                'only' => ['login','contact', 'about','logout','recoverpass','resetpass'],
                 'rules' => [
-                    [
+                     [
                         //El administrador tiene permisos sobre las siguientes acciones
-                        'actions' => ['logout', 'contact'],
+                        'actions' => ['recoverpass','resetpass'],
                         //Esta propiedad establece que tiene permisos
                         'allow' => true,
                         //Usuarios autenticados, el signo ? es para invitados
-                        'roles' => ['@'],
+                        'roles' => ['?'],
                         //Este método nos permite crear un filtro sobre la identidad del usuario
                         //y así establecer si tiene permisos o no
-                        'matchCallback' => function ($rule, $action) {
-                            //Llamada al método que comprueba si es un administrador
-                            return User::isUserAdmin(Yii::$app->user->identity->id);
-                        },
+                        
                     ],
+                    [
+                       //Los usuarios simples tienen permisos sobre las siguientes acciones
+                       'actions' => ['login' ],
+                       //Esta propiedad establece que tiene permisos
+                       'allow' => true,
+                       //Usuarios autenticados, el signo ? es para invitados
+                       'roles' => ['?'],
+                       
+                   ],
+                   
                     [
                        //Los usuarios simples tienen permisos sobre las siguientes acciones
                        'actions' => ['logout', 'about'],
@@ -51,11 +59,9 @@ class SiteController extends Controller
                        'roles' => ['@'],
                        //Este método nos permite crear un filtro sobre la identidad del usuario
                        //y así establecer si tiene permisos o no
-                       'matchCallback' => function ($rule, $action) {
-                          //Llamada al método que comprueba si es un usuario simple
-                          return User::isUserSimple(Yii::$app->user->identity->id);
-                      },
+                       
                    ],
+                   
                 ],
             ],
      //Controla el modo en que se accede a las acciones, en este ejemplo a la acción logout
@@ -104,7 +110,23 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
+   
+
+    /**
+     * Logout action.
+     *
+     * @return Response
+     */
+    public function actionLogout()
+    {
+         $session = Yii::$app->session;
+        $session->close();
+        Yii::$app->user->logout();
+
+        return $this->goHome();
+    }
+
+     public function actionLogin()
     {
        
         
@@ -125,21 +147,6 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
-    {
-         $session = Yii::$app->session;
-        $session->close();
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
-
     /**
      * Displays contact page.
      *
@@ -204,7 +211,7 @@ class SiteController extends Controller
       $subject = "Recuperar password";
       $body = "<p>Copie el siguiente código de verificación para restablecer su password ... ";
       $body .= "<strong>".$verification_code."</strong></p>";
-      $body .= "<p><a href='http://yii.local/index.php?r=site/resetpass'>Recuperar password</a></p>";
+      $body .= "<p><a href='http://localhost/sie/web/resetpass'>Recuperar password</a></p>";
 
       //Enviamos el correo
       Yii::$app->mailer->compose()
@@ -230,6 +237,7 @@ class SiteController extends Controller
      $model->getErrors();
     }
    }
+   $this->layout = 'layaout_login';
    return $this->render("recoverpass", ["model" => $model, "msg" => $msg]);
   }
 
@@ -261,7 +269,7 @@ class SiteController extends Controller
    //Si no existen las variables de sesión requeridas lo expulsamos a la página de inicio
    if (empty($session["recover"]) || empty($session["id_recover"]))
    {
-    return $this->redirect(["site/index"]);
+    return $this->redirect(["site/login"]);
    }
    else
    {
@@ -287,10 +295,12 @@ class SiteController extends Controller
       //Preparamos la consulta para resetear el password, requerimos el email, el id 
       //del usuario que fue guardado en una variable de session y el código de verificación
       //que fue enviado en el correo al usuario y que fue guardado en el registro
-      $table = Users::findOne(["email" => $model->email, "id" => $id_recover, "verification_code" => $model->verification_code]);
+      $table = Usuarios::findOne(["email" => $model->email, "id" => $id_recover, "verification_code" => $model->verification_code]);
      
       //Encriptar el password
-      $table->password = crypt($model->password, Yii::$app->params["salt"]);
+     
+      $table->password  = Yii::$app->getSecurity()->generatePasswordHash($model->password);
+      
      
       //Si la actualización se lleva a cabo correctamente
       if ($table->save())
@@ -321,7 +331,7 @@ class SiteController extends Controller
      }
     }
    }
-  
+   $this->layout = 'layaout_login';
    return $this->render("resetpass", ["model" => $model, "msg" => $msg]);
   
   }

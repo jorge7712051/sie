@@ -5,10 +5,10 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
-    'name'=>'SIE',
+    'name'=>'IEDCC',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'], 
-    'defaultRoute' => 'site',   
+    
     'language' => 'es',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -65,7 +65,7 @@ $config = [
             'showScriptName' => false,
              'rules' => [
                 '' => 'site/login',                                
-        '<controller:\w+>/<action:\w+>/' => '<controller>/<action>',
+       '<action>'=>'site/<action>', 
        
     ],
             

@@ -2,5 +2,5 @@
 
 return [
     'adminEmail' => 'jorge7712051@gmail.com',
-    'title' => 'Aplicación Yii',
+    'title' => 'IEDCC',
 ];

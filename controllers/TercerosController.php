@@ -214,8 +214,7 @@ class TercerosController extends Controller
             ELSE concat( t.nombre ," ", t.apellido)
             END as resultado')])
         ->from('terceros as t')
-        ->where('t.nombre  LIKE :q',[':q'=>$q.'%'] )
-        ->orWhere(' t.razon_social LIKE :q',[':q'=>$q.'%'] )
+        ->where('t.identificacion  LIKE :q',[':q'=>$q.'%'] )
         ->andWhere('t.idanulo=0')
         
         ->all();

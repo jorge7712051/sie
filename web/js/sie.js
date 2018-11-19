@@ -66,6 +66,20 @@ function terceros(b=null){
  	}
 }
 
+function format(input)
+{
+var num = input.value.replace(/\./g,'');
+if(!isNaN(num)){
+num = num.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g,'$1.');
+num = num.split('').reverse().join('').replace(/^[\.]/,'');
+input.value = num;
+}
+ 
+else{ alert('Solo se permiten numeros');
+input.value = input.value.replace(/[^\d\.]*/g,'');
+}
+}
+
 
 $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
 
@@ -80,6 +94,20 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 	 	var nombre=suggestion.nombre+" "+suggestion.apellido;
 	 	$('#detallescomprobanteegreso-nombre').val(nombre);
 	 }	
+   
+});
+$('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
+
+   
+   if(suggestion.razon_social!="")
+   {
+    $('#detallerecibocaja-nombre').val(suggestion.razon_social);
+   }
+   else
+   {
+    var nombre=suggestion.nombre+" "+suggestion.apellido;
+    $('#detallerecibocaja-nombre').val(nombre);
+   }  
    
 });
 /*

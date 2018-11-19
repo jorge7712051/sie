@@ -59,7 +59,7 @@ class ReciboCaja extends \yii\db\ActiveRecord
                                 'extensions' => 'pdf, png, jpg',
                                 'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
             ],
-             [['idrecibo'], 'match','pattern'=>"/^[0-9]{4}$/",'message' => 'Numero de recibo de caja invalido '],
+             [['idrecibo'], 'match','pattern'=>"/^[0-9]{6}$/",'message' => 'Numero de recibo de caja invalido '],
              [['idcentrocostos'], 'exist', 'skipOnError' => true, 'targetClass' => CentroCostos::className(), 'targetAttribute' => ['idcentrocostos' => 'idcentrocostos']],
         ];
     }
@@ -70,13 +70,13 @@ class ReciboCaja extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idrecibo' => 'Idrecibo',
+            'idrecibo' => 'Numero recibo',
             'fecha' => 'Fecha',
             'fecha_creacion' => 'Fecha Creacion',
             'concepto' => 'Concepto',
             'valor' => 'Valor',
             'bloqueo' => 'Bloqueo',
-            'idcentrocostos' => 'Idcentrocostos',
+            'idcentrocostos' => 'Iglesia',
             'adjunto' => 'Adjunto',
             'idanulo' => 'Idanulo',
             'codigo' => 'Codigo',

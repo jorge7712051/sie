@@ -33,9 +33,10 @@ use yii\web\View;
     'options' => ['placeholder' => 'Digite la identificacion ...','autocomplete'=>"off"],
     'scrollable' => true,
     'pluginOptions' => ['highlight'=>true,'minLength' => 2,'hint'=>false],
+    'pluginEvents'=> ['keyup' => 'function() { format(this);}'],
     'dataset' => [
        [
-        'display' => 'resultado',
+        'display' => 'identificacion',
         'remote' => [
                         'url' => Url::to(['terceros/terceros-list']) . '?q=%QUERY',
                         'wildcard' => '%QUERY',

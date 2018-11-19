@@ -2,11 +2,11 @@
  
  namespace app\models;
  use Yii;
- use yii\base\model;
+ use yii\base\Model;
  
  class FormResetPass extends model{
  
-     public $email;
+  public $email;
   public $password;
   public $password_repeat;
   public $verification_code;
@@ -22,3 +22,13 @@
              ['password_repeat', 'compare', 'compareAttribute' => 'password', 'message' => 'Los passwords no coinciden'],
          ];
      }
+
+     public function attributeLabels()
+    {
+        return [
+            'password_repeat' => 'Repetir password',
+            'password' => 'Password',
+          
+        ];
+    }
+   }

@@ -131,7 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
            
 
             if ($action === 'update') {
-                $url ='/detalle-recibo-caja/update?id='.$model->iddetalle_recibo;
+                $url =Url::base().'/detalle-recibo-caja/update?id='.$model->iddetalle_recibo;
                 return $url;
             }
             if ($action === 'delete') {

@@ -81,7 +81,6 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         $query->andFilterWhere([
             'idcomprobante' => $this->idcomprobante,
             'fecha_creacion' => $this->fecha_creacion,
-            'fecha' => $this->fecha,
             'bloqueo' => $this->bloqueo,
             'valor' => $this->valor,
             'alta' => $this->alta,
@@ -92,6 +91,12 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
 
         $query->andFilterWhere(['like', 'adjunto', $this->adjunto])
             ->andFilterWhere(['like', 'codigo', $this->codigo]);
+
+        if(!empty($this->fecha) && strpos($this->fecha, '-') !== false) {
+            list($start_date, $end_date) = explode(' - ', $this->fecha);
+            $query->andFilterWhere(['>=', 'fecha', $start_date]);
+            $query->andFilterWhere(['<=', 'fecha', $end_date]);
+        }
 
         return $dataProvider;
     }

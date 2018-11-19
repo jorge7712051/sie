@@ -37,6 +37,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => "<div class=\"col-lg-offset-4 col-lg-4\">{input} {label}</div>\n<div class=\"col-lg-4\">{error}</div>",
             ])->label('Recordarme') ?>
 
+
+            
+
             <div class="form-group">
                 <div class="col-lg-offset-1 col-lg-10">
                   <?= Html::submitButton('Incio sesion', ['class' => 'btn  btn-primary btn-block', 'name' => 'login-button']) ?>
@@ -44,6 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
              <?php ActiveForm::end(); ?>
+
+               <?= Html::a('¿Olvidaste tu contraseña?', ['/site/recoverpass'], ['class'=>'centro-link']) ?>
         </div>
+
+       
     </div>
 </div>

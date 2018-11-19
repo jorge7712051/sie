@@ -24,4 +24,10 @@
 .navbar-inverse .navbar-nav > li > a ,.navbar-inverse .navbar-brand,.navbar-inverse .btn-link{
     color: white;
 }
+.centro-link{
+	text-align: center;
+    display: block;
+}
+
+    
 

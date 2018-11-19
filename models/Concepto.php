@@ -47,7 +47,7 @@ class Concepto extends \yii\db\ActiveRecord
         return [
             'idconcepto' => 'Idconcepto',
             'concepto' => 'Concepto',
-            'piso' => 'Piso',
+            'piso' => 'Base',
             'porcentaje' => 'Porcentaje',
             'idanulo' => 'Idanulo',
             'doble'=>'Habilitación doble',

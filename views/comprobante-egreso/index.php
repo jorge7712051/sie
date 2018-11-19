@@ -34,17 +34,26 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'idcomprobante',
             [
-                    'attribute'=>'fecha',
-                    'value' =>'fecha',
-                    'filter'=>DatePicker::widget([
-                    'model' => $searchModel,
-                    'attribute'=>'fecha',
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-            ])       
+            // the attribute
+            'attribute' => 'fecha',
+            // format the value
+            'value' => function ($model) {
+                return $model->fecha;
+                
+            },
+            // some styling? 
+            'headerOptions' => [
+                'class' => 'col-md-2'
             ],
+            // here we render the widget
+            'filter' => DateRangePicker::widget([
+                'model' => $searchModel,
+                'attribute' => 'fecha',
+                'pluginOptions' => [
+                       'locale' => [ 'format' => 'YYYY-MM-DD' ]
+                            ]
+            ])
+        ],
          
             [
                 'attribute'=>'idcentrocostos',

@@ -105,12 +105,12 @@ class ComprobanteEgreso extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'idcomprobante' => 'Idcomprobante',
+            'idcomprobante' => 'Numero comprobante',
             'fecha_creacion' => 'Fecha Creacion',
             'fecha' => 'Fecha',
             'bloqueo' => 'Bloqueo',
             'valor' => 'Valor',
-            'idcentrocostos' => 'Idcentrocostos',
+            'idcentrocostos' => 'Iglesia',
             'adjunto' => 'Adjunto',
             'idanulo' => 'Idanulo',
             'codigo' => 'Codigo',
