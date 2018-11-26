@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Actualizar', ['update', 'id' => $model->idcomprobante], ['class' => 'btn btn-primary']) ?>
 
 
-       <?= Html::a('Agregar comprobantes', ['detalles-comprobante-egreso/create', 'id' => base64_encode($model->idcomprobante)], ['class' => 'btn btn-primary']) ?> 
+       <?= Html::a('Añadir nuevo', ['detalles-comprobante-egreso/create', 'id' => base64_encode($model->idcomprobante)], ['class' => 'btn btn-primary']) ?> 
     </p>
 
     <?= DetailView::widget([

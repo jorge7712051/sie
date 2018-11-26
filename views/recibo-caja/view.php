@@ -15,7 +15,7 @@ use app\models\TipoIngreso;
 /* @var $model app\models\ReciboCaja */
 
 $this->title = $model->idrecibo;
-$this->params['breadcrumbs'][] = ['label' => 'Recibo Cajas', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Recibo Caja', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="recibo-caja-view">
@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Actualizar', ['update', 'id' => $model->idrecibo], ['class' => 'btn btn-primary']) ?>
         
-       <?= Html::a('Agregar comprobantes', ['detalle-recibo-caja/create', 'id' => base64_encode($model->idrecibo)], ['class' => 'btn btn-primary']) ?> 
+       <?= Html::a('Añadir nuevo', ['detalle-recibo-caja/create', 'id' => base64_encode($model->idrecibo)], ['class' => 'btn btn-primary']) ?> 
     </p>
 
     <?= DetailView::widget([

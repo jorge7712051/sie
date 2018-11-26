@@ -45,7 +45,7 @@ class DetalleReciboCajaController extends Controller
                     ],
                     [
                        //Los usuarios simples tienen permisos sobre las siguientes acciones
-                       'actions' => ['create','delete'],
+                       'actions' => ['create','delete','update'],
                        //Esta propiedad establece que tiene permisos
                        'allow' => true,
                        //Usuarios autenticados, el signo ? es para invitados

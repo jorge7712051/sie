@@ -85,12 +85,13 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 
 	 $('#detallescomprobanteegreso-idtercero').val(suggestion.idtercero);
    $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
-	 if(suggestion.razon_social!="")
+	 if(suggestion.razon_social!=null && suggestion.razon_social!="")
 	 {
 	 	$('#detallescomprobanteegreso-nombre').val(suggestion.razon_social);
 	 }
 	 else
 	 {
+    
 	 	var nombre=suggestion.nombre+" "+suggestion.apellido;
 	 	$('#detallescomprobanteegreso-nombre').val(nombre);
 	 }	
@@ -99,12 +100,14 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 $('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
 
    
-   if(suggestion.razon_social!="")
+   if(suggestion.razon_social!=null && suggestion.razon_social!="")
    {
+    
     $('#detallerecibocaja-nombre').val(suggestion.razon_social);
    }
    else
    {
+    
     var nombre=suggestion.nombre+" "+suggestion.apellido;
     $('#detallerecibocaja-nombre').val(nombre);
    }  

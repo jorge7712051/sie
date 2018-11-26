@@ -205,6 +205,7 @@ class TercerosController extends Controller
 
     public function actionTercerosList($q = null)
     {
+        $q=str_replace('.', '', $q);
         $params = ","." ".",";
         $out = [];       
         $out = (new \yii\db\Query())
@@ -215,8 +216,7 @@ class TercerosController extends Controller
             END as resultado')])
         ->from('terceros as t')
         ->where('t.identificacion  LIKE :q',[':q'=>$q.'%'] )
-        ->andWhere('t.idanulo=0')
-        
+        ->andWhere('t.idanulo=0')        
         ->all();
        return \yii\helpers\Json::encode($out);
     }

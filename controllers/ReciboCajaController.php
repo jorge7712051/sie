@@ -15,6 +15,9 @@ use yii\web\Response;
 use yii\filters\AccessControl;
 use app\models\User;
 use app\models\DetalleReciboCajaSearch;
+use app\models\DetalleReciboCaja;
+use app\models\Caja;
+use app\models\Bancos;
 /**
  * ReciboCajaController implements the CRUD actions for ReciboCaja model.
  */
@@ -221,6 +224,21 @@ class ReciboCajaController extends Controller
         return $mensaje;
     }
 
+
+    public function Borrar($id)
+    {
+        $modelcaja= new Caja();
+        $modelbanco= new Bancos();
+        
+        foreach ($id as $key) 
+        {
+            Bancos::deleteAll("idcaja=:id", [":id" => $key['iddetalle_recibo']]);
+            Caja::deleteAll("idcaja=:id", [":id" => $key['iddetalle_recibo']]);
+        }
+       
+        return true;
+    }
+
     /**
      * Deletes an existing ReciboCaja model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -230,8 +248,13 @@ class ReciboCajaController extends Controller
      */
     public function actionDelete($id)
     {
+        $model = $this->findModel($id);
+        $directorio= $model->adjunto  ;
+        $detalle = DetalleReciboCaja::find()->where("idrecibocaja=:id", [":id" =>$id])->all();
+        $this->Borrar($detalle);
+        DetalleReciboCaja::deleteAll("idrecibocaja=:id", [":id" =>$id]);
+        unlink($directorio);
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 

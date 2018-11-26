@@ -10,7 +10,7 @@ use app\models\CentroCostos;
 /* @var $searchModel app\models\ReciboCajaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Recibo Cajas';
+$this->title = 'Recibo Caja';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="recibo-caja-index">
@@ -67,9 +67,24 @@ $this->params['breadcrumbs'][] = $this->title;
             //'codigo',
 
             [   'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} ',
+                'template' => '{view} {update}{delete} ',
                 'visibleButtons' => [
                 'update' => function ($url, $model, $key) {
+                    $session = Yii::$app->session;
+                    if($session->get('rol')==1)
+                    {
+                        return true;
+                    }
+                    $hoy = date("Y-m");
+                    $fecha1=explode("-", $url->fecha);
+                    $a =$fecha1[0]."-".$fecha1[1];   
+                    if($a==$hoy && $url->bloqueo==0)
+                    {
+                         return true;
+                    }
+                    return false;
+                    },
+                'delete' => function ($url, $model, $key) {
                     $session = Yii::$app->session;
                     if($session->get('rol')==1)
                     {

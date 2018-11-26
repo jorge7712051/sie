@@ -5,10 +5,10 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DetalleReciboCaja */
-
+/*
 $this->title = 'Create Detalle Recibo Caja';
 $this->params['breadcrumbs'][] = ['label' => 'Detalle Recibo Cajas', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = $this->title;*/
 ?>
 <div class="detalle-recibo-caja-create">
 

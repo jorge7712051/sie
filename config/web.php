@@ -14,6 +14,9 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+     'gridview' => ['class' => 'kartik\grid\Module']
+],
     'components' => [
         'formatter' => [
                     'thousandSeparator' => ',',

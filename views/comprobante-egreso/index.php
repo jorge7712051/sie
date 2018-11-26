@@ -6,6 +6,7 @@ use yii\helpers\ArrayHelper;
 use app\models\CentroCostos;
 use kartik\daterange\DateRangePicker;
 use kartik\widgets\DatePicker;
+use kartik\export\ExportMenu;
 
 
 /* @var $this yii\web\View */
@@ -23,6 +24,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Crear Comprobante Egreso', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+<?php
+    $gridColumns = [
+    ['class' => 'yii\grid\SerialColumn'],
+    'idcomprobante',
+    'fecha',
+    'valor',
+    'idcentrocostos',
+    'codigo',
+    ['class' => 'yii\grid\ActionColumn'],
+];
+
+// Renders a export dropdown menu
+echo ExportMenu::widget([
+    'dataProvider' => $dataProviderBanco,
+    'columns' => $gridColumns
+]);
+?>
 
     <?= GridView::widget([
         'tableOptions' => [ 'class' => 'table table-sm table-hover table-bordered table-striped'],
@@ -118,9 +136,24 @@ $this->params['breadcrumbs'][] = $this->title;
             //'codigo',
 
             [   'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} ',
+                'template' => '{view} {update} {delete}',
                 'visibleButtons' => [
                 'update' => function ($url, $model, $key) {
+                    $session = Yii::$app->session;
+                    if($session->get('rol')==1)
+                    {
+                        return true;
+                    }
+                    $hoy = date("Y-m");
+                    $fecha1=explode("-", $url->fecha);
+                    $a =$fecha1[0]."-".$fecha1[1];   
+                    if($a==$hoy && $url->bloqueo==0)
+                    {
+                         return true;
+                    }
+                    return false;
+                    },
+                'delete' => function ($url, $model, $key) {
                     $session = Yii::$app->session;
                     if($session->get('rol')==1)
                     {

@@ -6,6 +6,8 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ComprobanteEgreso;
+use yii\db\ActiveQuery;
+use yii\db\Query;
 
 /**
  * ComprobanteEgresoSearch represents the model behind the search form of `app\models\ComprobanteEgreso`.
@@ -99,5 +101,56 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         }
 
         return $dataProvider;
+    }
+
+        public function searchcomprobantebanco($params)
+    {
+        $session = Yii::$app->session;
+        if ($session->isActive)
+        {
+            if($session->get('rol')==1)
+            {
+                $query = (new Query())->from('comprobante_banco')->all();
+                
+                
+                return $query;       
+
+            }
+            else{
+                $query = ComprobanteEgreso::find();
+                $query->where('idanulo=0');
+                $query->andWhere('idcentrocostos='.$session->get('centrocostos'));
+                $query->orderBy(['fecha' => SORT_ASC]) ;
+
+            }
+        }
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+           'fecha' => $this->fecha,
+        ]);
+
+        
+/*
+        if(!empty($this->fecha) && strpos($this->fecha, '-') !== false) {
+            list($start_date, $end_date) = explode(' - ', $this->fecha);
+            $query->andFilterWhere(['>=', 'fecha', $start_date]);
+            $query->andFilterWhere(['<=', 'fecha', $end_date]);
+        }
+
+        return $dataProvider;*/
     }
 }

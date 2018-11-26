@@ -10,6 +10,7 @@ use app\models\Bancos;
 use app\models\Caja;
 use app\models\ComprobanteEgresoSearch;
 use app\models\DetallesComprobanteEgresoSearch;
+use app\models\DetallesComprobanteEgreso;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -95,10 +96,11 @@ class ComprobanteEgresoController extends Controller
     {
         $searchModel = new ComprobanteEgresoSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $dataProviderbanco= $searchModel->searchcomprobantebanco(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'dataProviderBanco' => $dataProviderbanco,
         ]);
     }
 
@@ -206,11 +208,14 @@ class ComprobanteEgresoController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id); 
-        $directorio= $model->adjunto  ;
-        unlink($directorio);
-        $this->findModel($id)->delete();
-        return $this->redirect(['index']);
+    $model = $this->findModel($id);
+    $directorio= $model->adjunto  ;
+    $detalle = DetallesComprobanteEgreso::find()->where("idcomprobanteegreso=:id", [":id" =>$id])->all();
+    $this->Borrar($detalle);
+    DetallesComprobanteEgreso::deleteAll("idcomprobanteegreso=:id", [":id" =>$id]);
+    unlink($directorio);
+    $this->findModel($id)->delete();
+    return $this->redirect(['index']);
     }
 
     public function actionAlta($id)
@@ -229,6 +234,20 @@ class ComprobanteEgresoController extends Controller
         $model->save();
         $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p>Los valores del comprobante y la suma de los valores de los adjuntos no coinciden o no son iguales, para que el comprobante sea tenido en cuenta, pueda subir al sistema y se vea reflejado en el informe mensual ajuste los valores hasta que sean iguales.</p><hr><p class="mb-0">Comprobante no tenido en cuenta .</p></div>'; 
         return $mensaje;
+    }
+
+    public function Borrar($id)
+    {
+        $modelcaja= new Caja();
+        $modelbanco= new Bancos();
+        
+        foreach ($id as $key) 
+        {
+            Bancos::deleteAll("idcomprobante=:id", [":id" => $key['iddetalle']]);
+            Caja::deleteAll("idcomprobante=:id", [":id" => $key['iddetalle']]);
+        }
+       
+        return true;
     }
 
     /**
