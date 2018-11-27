@@ -28,6 +28,13 @@
 	text-align: center;
     display: block;
 }
-
-    
+#tablainformes tbody
+{
+    display: none;
+}
+.fondo
+{
+    background-color: #f5f5f5;
+    padding: 10px;
+}   
 

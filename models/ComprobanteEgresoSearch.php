@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ComprobanteEgreso;
+use app\models\ComprobanteBanco;
 use yii\db\ActiveQuery;
 use yii\db\Query;
 
@@ -18,13 +19,14 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
      * {@inheritdoc}
      */
     
-      
+    public $fecha_informe;
+    public $idiglesia;
 
     public function rules()
     {
         return [
             [['idcomprobante', 'bloqueo', 'idcentrocostos', 'idanulo'], 'integer'],
-            [['fecha_creacion', 'fecha', 'adjunto', 'codigo','alta','anulado'], 'safe'],
+            [['fecha_creacion', 'fecha', 'adjunto', 'codigo','alta','anulado','fecha_informe'], 'safe'],
             [['valor'], 'number'],
         ];
     }
@@ -110,23 +112,34 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         {
             if($session->get('rol')==1)
             {
-                $query = (new Query())->from('comprobante_banco')->all();
-                
-                
-                return $query;       
+                $query = ComprobanteBanco::find()->select(
+                    ['fecha_informe'=>'fecha',
+                     'idcomprobante'=>'idcomprobante', 
+                     'idiglesia'=>'idcentrocostos',
+                     'idtercero'=>'idtercero',
+                     'valor_total'=>'valor_d',
+                     'idconcepto'=>'idconcepto',
+                     'area'=>'area',
+                     'centrocosto'=>'centrocosto',
+                     'retencion'=>'subtotal',
+                     'subtotal'=>'total'
+
+
+
+                    ]);
+
 
             }
             else{
-                $query = ComprobanteEgreso::find();
-                $query->where('idanulo=0');
-                $query->andWhere('idcentrocostos='.$session->get('centrocostos'));
+                $query = ComprobanteBanco::find();
+                $query->where('idcentrocostos='.$session->get('centrocostos'));
                 $query->orderBy(['fecha' => SORT_ASC]) ;
 
             }
         }
         // add conditions that should always apply here
 
-        $dataProvider = new ActiveDataProvider([
+        $dataProviderbanco = new ActiveDataProvider([
             'query' => $query,
         ]);
 
@@ -135,13 +148,12 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
-            return $dataProvider;
+            return $dataProviderbanco;
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
-           'fecha' => $this->fecha,
-        ]);
+        $query->andFilterWhere(['>=', 'fecha', $this->fecha_informe."-01"]);
+         $query->andFilterWhere(['<=', 'fecha', $this->fecha_informe."-30"]);
 
         
 /*
@@ -150,7 +162,7 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
             $query->andFilterWhere(['>=', 'fecha', $start_date]);
             $query->andFilterWhere(['<=', 'fecha', $end_date]);
         }
-
-        return $dataProvider;*/
+*/
+        return $dataProviderbanco;
     }
 }

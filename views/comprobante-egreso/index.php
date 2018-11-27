@@ -19,20 +19,26 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="comprobante-egreso-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
+    <br>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a('Crear Comprobante Egreso', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+<div  class="row">
+  <div class="col-md-6">
+    <div class="fondo">
+    <h4 class="text-center">Comprobante egreso banco</h4>
 <?php
     $gridColumns = [
-    ['class' => 'yii\grid\SerialColumn'],
+    
     'idcomprobante',
-    'fecha',
-    'valor',
-    'idcentrocostos',
-    'codigo',
-    ['class' => 'yii\grid\ActionColumn'],
+    'idiglesia',
+    'idtercero',
+    'valor_total',
+    'idconcepto',
+    'area',
+    'centrocosto',
+    'subtotal',
+    'total',
+   
 ];
 
 // Renders a export dropdown menu
@@ -41,6 +47,93 @@ echo ExportMenu::widget([
     'columns' => $gridColumns
 ]);
 ?>
+
+<?= GridView::widget([
+        'dataProvider' => $dataProviderBanco,
+        'tableOptions' => [ 'id' => 'tablainformes'],
+        'filterModel' => $searchModel,
+        'columns' => [           
+            [
+                'attribute' => 'fecha_informe',
+                'value' => function ($model) {
+                return $model->fecha_informe;                
+                },  
+                'headerOptions' => 
+                                [
+                                    'class' => 'col-md-2'
+                                ],            
+                'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fecha_informe', 
+                    'pluginOptions' => [
+                            'startView'=>'year',
+                            'minViewMode'=>'months',
+                            'format' => 'yyyy-mm'
+                    ]          
+                ])                    
+            ]
+        ],
+    ]); ?>
+</div>
+</div>
+<div class="col-md-6">
+     <div class="fondo">
+         <h4 class="text-center">Comprobante egreso caja</h4>
+<?php
+    $gridColumns = [
+    
+    'idcomprobante',
+    'idiglesia',
+    'idtercero',
+    'valor_total',
+    'idconcepto',
+    'area',
+    'centrocosto',
+    'subtotal',
+    'total',
+   
+];
+
+// Renders a export dropdown menu
+echo ExportMenu::widget([
+    'dataProvider' => $dataProviderBanco,
+    'columns' => $gridColumns
+]);
+?>
+
+<?= GridView::widget([
+        'dataProvider' => $dataProviderBanco,
+        'tableOptions' => [ 'id' => 'tablainformes'],
+        'filterModel' => $searchModel,
+        'columns' => [           
+            [
+                'attribute' => 'fecha_informe',
+                'value' => function ($model) {
+                return $model->fecha_informe;                
+                },  
+                'headerOptions' => 
+                                [
+                                    'class' => 'col-md-2'
+                                ],            
+                'filter' => DatePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'fecha_informe', 
+                    'pluginOptions' => [
+                            'startView'=>'year',
+                            'minViewMode'=>'months',
+                            'format' => 'yyyy-mm'
+                    ]          
+                ])                    
+            ]
+        ],
+    ]); ?>
+</div>
+ </div>
+</div>  
+<br>
+    <p>
+        <?= Html::a('Crear Comprobante Egreso', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 
     <?= GridView::widget([
         'tableOptions' => [ 'class' => 'table table-sm table-hover table-bordered table-striped'],
