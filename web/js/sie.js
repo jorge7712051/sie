@@ -28,16 +28,18 @@ function formularioajax(idformulario)
 }
 function cargarciudades(){
   var id=$('#informes-idpais').val();
-  
-  $.ajax({
+  if (id!=null)
+  {
+     $.ajax({
       type: "GET",
       url:"../departamento/departamento",
       data: {id:id},
       success : function(data) {
       
-     $('#informes-iddepartamento').html( data );
+      $('#informes-iddepartamento').html( data );
       }
-  });
+    });
+  }
 }
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -82,7 +84,7 @@ input.value = input.value.replace(/[^\d\.]*/g,'');
 
 
 $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
-
+   
 	 $('#detallescomprobanteegreso-idtercero').val(suggestion.idtercero);
    $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
 	 if(suggestion.razon_social!=null && suggestion.razon_social!="")
@@ -99,7 +101,7 @@ $('#detallescomprobanteegreso-cedulatercero').bind('typeahead:select', function(
 });
 $('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
 
-   
+    $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
    if(suggestion.razon_social!=null && suggestion.razon_social!="")
    {
     
@@ -117,38 +119,60 @@ $('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, sugg
 $('#informes-idarea').change(function() {
         alert(this.value);
     });*/
+$('#detallescomprobanteegreso-cedulatercero').on('blur', function() {
+    var id=$('#detallescomprobanteegreso-idtercero').val();
+    var identificacion=this.value;
+    this.value=numberFormat(identificacion);
+    $.ajax({
+            url : '../terceros/busqueda',
+            data : { id : identificacion },
+            type : 'POST',
+            dataType : 'json',
+            success : function(data) {
 
-$('#detallerecibocaja-cedulatercero').bind('typeahead:select', function(ev, suggestion) {
+                $('#detallescomprobanteegreso-idtercero').val(data.idtercero);
+                if(data.razon_social!="" && data.razon_social!=null)
+                {
+                  $('#detallescomprobanteegreso-nombre').val(data.razon_social);
+                }
+                else
+                {
+                  var nombre=data.nombre+" "+data.apellido;
+                  $('#detallescomprobanteegreso-nombre').val(nombre);
+                }  
+            }
+      });
+  });
 
- 
-   $('#detallerecibocaja-idtercero').val(suggestion.idtercero);
-   if(suggestion.razon_social!="")
-   {
-    $('#detallescomprobanteegreso-nombre').val(suggestion.razon_social);
-   }
-   else
-   {
-    var nombre=suggestion.nombre+" "+suggestion.apellido;
-    $('#detallescomprobanteegreso-nombre').val(nombre);
-   }  
-   
-});
+$('#detallerecibocaja-cedulatercero').on('blur', function() {
+    var id=$('#detallerecibocaja-idtercero').val();
+    var identificacion=this.value;
+    format(this);
+      $.ajax({
+            url : '../terceros/busqueda',
+            data : { id : identificacion },
+            type : 'POST',
+            dataType : 'json',
+            success : function(data) {
+
+                $('#detallerecibocaja-idtercero').val(data.idtercero);
+                if(data.razon_social!="" && data.razon_social!=null)
+                {
+                  $('#detallerecibocaja-nombre').val(data.razon_social);
+                }
+                else
+                {
+                  var nombre=data.nombre+" "+data.apellido;
+                  $('#detallerecibocaja-nombre').val(nombre);
+                }  
+            }
+      });
+  });
+
 $('#detallescomprobanteegreso-idconcepto').on('change', function() {
 	var idconcepto=this.value;
-	$.ajax({
-  		type: "POST",
-  		url:"../concepto/concepto-porcentaje",
-  		data: {id:idconcepto},
-  		dataType : 'json',
-  		success : function(data) {
-        	$.each(data, function(indice, valor) {
-        		$('#detallescomprobanteegreso-porcentaje').val(data[indice]['porcentaje']);
-        		$('#detallescomprobanteegreso-piso').val(data[indice]['piso']);
-        		$('#detallescomprobanteegreso-doble').val(data[indice]['doble']);
-        		$('#detallescomprobanteegreso-adjobligatorio').val(data[indice]['adjobligatorio']);
-			});
-    	}
-	});
+  asientocontable(idconcepto);
+	
 });
 $('#informes-idpais').on('change',function(){
   var id=$('#informes-idpais').val();
@@ -204,7 +228,27 @@ $('#detallescomprobanteegreso-valor-disp').on('blur', function() {
 function regladetres(valorbase,porcentaje)
 {
 	var resultado=(porcentaje*valorbase)/100;
-	return resultado;
+  resultado = Math.round(resultado);
+  return resultado;
+}
+
+
+function asientocontable(idconcepto)
+{
+  $.ajax({
+      type: "POST",
+      url:"../concepto/concepto-porcentaje",
+      data: {id:idconcepto},
+      dataType : 'json',
+      success : function(data) {
+          $.each(data, function(indice, valor) {
+            $('#detallescomprobanteegreso-porcentaje').val(data[indice]['porcentaje']);
+            $('#detallescomprobanteegreso-piso').val(data[indice]['piso']);
+            $('#detallescomprobanteegreso-doble').val(data[indice]['doble']);
+            $('#detallescomprobanteegreso-adjobligatorio').val(data[indice]['adjobligatorio']);
+      });
+      }
+  });
 }
 
 function updatecomprobantes(urlalta,urlbaja){
@@ -237,6 +281,43 @@ function updatecomprobantes(urlalta,urlbaja){
     
   }
 }
+
+ function numberFormat(numero){
+        // Variable que contendra el resultado final
+        var resultado = "";
+ 
+        // Si el numero empieza por el valor "-" (numero negativo)
+        if(numero[0]=="-")
+        {
+            // Cogemos el numero eliminando los posibles puntos que tenga, y sin
+            // el signo negativo
+            nuevoNumero=numero.replace(/\./g,'').substring(1);
+        }else{
+            // Cogemos el numero eliminando los posibles puntos que tenga
+            nuevoNumero=numero.replace(/\./g,'');
+        }
+ 
+        // Si tiene decimales, se los quitamos al numero
+        if(numero.indexOf(",")>=0)
+            nuevoNumero=nuevoNumero.substring(0,nuevoNumero.indexOf(","));
+ 
+        // Ponemos un punto cada 3 caracteres
+        for (var j, i = nuevoNumero.length - 1, j = 0; i >= 0; i--, j++)
+            resultado = nuevoNumero.charAt(i) + ((j > 0) && (j % 3 == 0)? ".": "") + resultado;
+ 
+        // Si tiene decimales, se lo añadimos al numero una vez forateado con 
+        // los separadores de miles
+        if(numero.indexOf(",")>=0)
+            resultado+=numero.substring(numero.indexOf(","));
+ 
+        if(numero[0]=="-")
+        {
+            // Devolvemos el valor añadiendo al inicio el signo negativo
+            return "-"+resultado;
+        }else{
+            return resultado;
+        }
+    }
 
 $(function(){
 

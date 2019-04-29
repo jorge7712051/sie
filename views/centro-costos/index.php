@@ -2,6 +2,9 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use app\models\Ciudades;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CentroCostosSearch */
@@ -26,7 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'idcentrocostos',
-            'centrocostos',            
+            'centrocostos', 
+            [
+                'attribute'=>'idciudad',
+                'value'=>function($model){
+                    $ciudad = Ciudades::findOne($model->idciudad);
+                    return $ciudad->ciudad;
+                },
+                'filter'=> ArrayHelper::map(Ciudades::find()->all(),'idciudad','ciudad'),
+
+            ],           
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -18,7 +18,7 @@ class CentroCostosSearch extends CentroCostos
     public function rules()
     {
         return [
-            [['idcentrocostos', 'idanulo'], 'integer'],
+            [['idcentrocostos', 'idanulo','idciudad'], 'integer'],
             [['centrocostos'], 'safe'],
         ];
     }
@@ -60,6 +60,7 @@ class CentroCostosSearch extends CentroCostos
         // grid filtering conditions
         $query->andFilterWhere([
             'idcentrocostos' => $this->idcentrocostos,
+            'idciudad' => $this->idciudad,
             'idanulo' => $this->idanulo,
         ]);
 

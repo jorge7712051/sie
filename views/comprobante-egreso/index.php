@@ -7,6 +7,9 @@ use app\models\CentroCostos;
 use kartik\daterange\DateRangePicker;
 use kartik\widgets\DatePicker;
 use kartik\export\ExportMenu;
+use yii\widgets\ActiveForm;
+
+
 
 
 /* @var $this yii\web\View */
@@ -21,42 +24,24 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <br>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+<?php  $session = Yii::$app->session;
 
+// comprueba si una sesión está ya abierta
+if ($session->isActive){
+    if($session->get('rol')==1){ ?>
 <div  class="row">
   <div class="col-md-6">
     <div class="fondo">
     <h4 class="text-center">Comprobante egreso banco</h4>
-<?php
-    $gridColumns = [
-    
-    'idcomprobante',
-    'idiglesia',
-    'idtercero',
-    'valor_total',
-    'idconcepto',
-    'area',
-    'centrocosto',
-    'subtotal',
-    'total',
-   
-];
-
-// Renders a export dropdown menu
-echo ExportMenu::widget([
-    'dataProvider' => $dataProviderBanco,
-    'columns' => $gridColumns
-]);
-?>
-
-<?= GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProviderBanco,
         'tableOptions' => [ 'id' => 'tablainformes'],
         'filterModel' => $searchModel,
         'columns' => [           
             [
-                'attribute' => 'fecha_informe',
+                'attribute' => 'fecha_banco',
                 'value' => function ($model) {
-                return $model->fecha_informe;                
+                return $model->fecha_banco;                
                 },  
                 'headerOptions' => 
                                 [
@@ -64,7 +49,7 @@ echo ExportMenu::widget([
                                 ],            
                 'filter' => DatePicker::widget([
                     'model' => $searchModel,
-                    'attribute' => 'fecha_informe', 
+                    'attribute' => 'fecha_banco', 
                     'pluginOptions' => [
                             'startView'=>'year',
                             'minViewMode'=>'months',
@@ -74,42 +59,54 @@ echo ExportMenu::widget([
             ]
         ],
     ]); ?>
+    <br>
+<?php
+    $gridColumns = [
+    'fecha_banco',
+    'codigo',
+    'idcomprobante',
+    'idiglesia',
+    'idtercero',   
+    'area',
+    'centrocosto',    
+    'retencion',
+    'subtotal',
+    'valor_total',
+    'idconcepto',
+    'concepto',
+    'cuenta',
+    'contraparte',
+     'id_anterior' ,
+   
+];
+
+// Renders a export dropdown menu
+echo ExportMenu::widget([
+    'dataProvider' => $dataProviderBanco,
+    'columns' => $gridColumns,
+    'filename' => 'Comprobante egreso banco',
+    'dropdownOptions' => [
+        'label' => 'Exportar banco',
+        'class' => 'btn btn-secondary'
+    ]
+]);
+?>
+
 </div>
 </div>
 <div class="col-md-6">
      <div class="fondo">
          <h4 class="text-center">Comprobante egreso caja</h4>
-<?php
-    $gridColumns = [
-    
-    'idcomprobante',
-    'idiglesia',
-    'idtercero',
-    'valor_total',
-    'idconcepto',
-    'area',
-    'centrocosto',
-    'subtotal',
-    'total',
-   
-];
-
-// Renders a export dropdown menu
-echo ExportMenu::widget([
-    'dataProvider' => $dataProviderBanco,
-    'columns' => $gridColumns
-]);
-?>
 
 <?= GridView::widget([
-        'dataProvider' => $dataProviderBanco,
+        'dataProvider' => $dataProviderCaja,
         'tableOptions' => [ 'id' => 'tablainformes'],
         'filterModel' => $searchModel,
         'columns' => [           
             [
-                'attribute' => 'fecha_informe',
+                'attribute' => 'fecha_caja',
                 'value' => function ($model) {
-                return $model->fecha_informe;                
+                return $model->fecha_caja;                
                 },  
                 'headerOptions' => 
                                 [
@@ -117,7 +114,7 @@ echo ExportMenu::widget([
                                 ],            
                 'filter' => DatePicker::widget([
                     'model' => $searchModel,
-                    'attribute' => 'fecha_informe', 
+                    'attribute' => 'fecha_caja', 
                     'pluginOptions' => [
                             'startView'=>'year',
                             'minViewMode'=>'months',
@@ -127,10 +124,87 @@ echo ExportMenu::widget([
             ]
         ],
     ]); ?>
+<br>
+
+<?php
+    $gridColumnscaja = [
+    
+    'fecha_caja',
+    'codigo',
+    'idcomprobante',
+    'idiglesia',
+    'idtercero',   
+    'area',
+    'centrocosto',    
+    'retencion',
+    'subtotal',
+    'valor_total',
+    'idconcepto',
+    'concepto',
+    'asiento_contable',
+    'cuenta',
+    'contraparte',
+     'id_anterior' ,
+   
+];
+
+// Renders a export dropdown menu
+echo ExportMenu::widget([
+    'dataProvider' => $dataProviderCaja,
+    'columns' => $gridColumnscaja,
+    'filename' => 'Comprobante egreso caja',
+    'dropdownOptions' => [
+        'label' => 'Exportar Caja',
+        'class' => 'btn btn-secondary'
+    ]
+]);
+?>
+
+
 </div>
  </div>
 </div>  
 <br>
+<div class="row">
+<?php $form = ActiveForm::begin([
+            'method' => 'post',
+            'action' => 'desbloqueo',          
+            'id' => 'formulario-informe-mensual',                     
+            'enableAjaxValidation' => true,
+]); ?>
+ <div class="col-xs-12 col-md-3 ">
+<?= $form->field($model, 'fecha')->widget(DatePicker::classname(), [
+                'options' => ['autocomplete'=>"off",'placeholder' => 'Digite la fecha del comprobante'],
+                                'pluginOptions' => [
+                                'autoclose'=>true,
+                                'startView'=>'year',
+                                'minViewMode'=>'months',
+                                'format' => 'yyyy-mm'
+                               
+                                                    ]
+    ]);?>    
+</div>
+ <div class="col-xs-12 col-md-3 ">
+<?= $form->field($model, 'bloqueo')->dropDownList(
+            ['0' => 'DESBLOQUEAR', '1' => 'BLOQUEAR',]
+    );?> 
+</div>
+
+ <div class="col-xs-12 col-md-3 ">
+ <?= $form->field($model, 'idcentrocostos')->dropDownList(ArrayHelper::map(CentroCostos::find()->where('idanulo=0')->all(), 'idcentrocostos', 'centrocostos'),array( 'prompt'=>'Seleccione...')); ?>
+</div>
+
+ <div class="col-xs-12 col-md-3 ">
+        <div class="form-group">
+            <br>
+            <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
+        </div>
+    </div>  
+
+<?php ActiveForm::end(); ?>
+</div>
+
+<?php } } ?>
     <p>
         <?= Html::a('Crear Comprobante Egreso', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
@@ -240,7 +314,7 @@ echo ExportMenu::widget([
                     $hoy = date("Y-m");
                     $fecha1=explode("-", $url->fecha);
                     $a =$fecha1[0]."-".$fecha1[1];   
-                    if($a==$hoy && $url->bloqueo==0)
+                    if( $url->bloqueo==0)
                     {
                          return true;
                     }
@@ -255,7 +329,7 @@ echo ExportMenu::widget([
                     $hoy = date("Y-m");
                     $fecha1=explode("-", $url->fecha);
                     $a =$fecha1[0]."-".$fecha1[1];   
-                    if($a==$hoy && $url->bloqueo==0)
+                    if( $url->bloqueo==0)
                     {
                          return true;
                     }

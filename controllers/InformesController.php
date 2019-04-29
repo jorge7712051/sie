@@ -16,6 +16,8 @@ use yii\db\ActiveQuery;
 use kartik\mpdf\Pdf;
 use app\models\CentroCostos;
 use app\models\Area;
+use app\models\ReciboCaja;
+use app\models\ComprobanteEgreso;
 use app\models\CentroArea;
 use yii\helpers\ArrayHelper;
 /**
@@ -60,6 +62,14 @@ class InformesController extends Controller
                           return User::isUserSimple(Yii::$app->user->identity->id);
                       },
                    ],
+                   [
+                       //Los usuarios simples tienen permisos sobre las siguientes acciones
+                       'actions' => ['cierre-mes'],
+                       //Esta propiedad establece que tiene permisos
+                       'allow' => true,
+                       //Usuarios autenticados, el signo ? es para invitados
+                       'roles' => ['?']
+                   ],
                 ],
             ],
      //Controla el modo en que se accede a las acciones
@@ -89,6 +99,8 @@ if ($model->load(Yii::$app->request->post()))
 {
     if($model->validate())
     {
+    $s=".";
+    $d=",";
     $fecha1=explode("-", $model->fecha);
     $ano=$fecha1[0];
     $nextmes=$fecha1[1]+1;
@@ -105,6 +117,8 @@ if ($model->load(Yii::$app->request->post()))
    $datos['otrosbanco']=$this->totalotros($model->fecha,'recibo_caja_banco',$model->centro_costos,'1','2');
    $otros=$this->ingresoscomprobante($model->fecha,'comprobante_caja',$model->centro_costos);
    $otrosbanco=$this->ingresoscomprobante($model->fecha,'comprobante_banco',$model->centro_costos);
+   $datos['retencion']=$this->retencionfuente($model->fecha,'comprobante_banco',$model->centro_costos);
+   $datos['retencion']+=$this->retencionfuente($model->fecha,'comprobante_caja',$model->centro_costos);
    $fechaanterior=$this->fechaanterior($model->fecha);
    $datos['otros']+=$otros;
    $datos['otrosbanco']+=$otrosbanco;
@@ -122,19 +136,19 @@ if ($model->load(Yii::$app->request->post()))
     $datos['egresobanco']+=$datos['egresobancocom'];
     $datos['cajafinal']=$datos['cajadisponible']-$datos['egresocaja'];
     $datos['bancofinal']=$datos['bancodisponible']-$datos['egresobanco'];
-    $datos['diezmo']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'4')+
+    $datos['diezmob']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'4')+
     $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'4');
     $datos['cuatro']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'5')+
     $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'5');
     $datos['bonos']=$this->mision($model->fecha,'comprobante_caja',$model->centro_costos,'6')+
     $this->mision($model->fecha,'comprobante_banco',$model->centro_costos,'6');
-    $datos['totalmision']= $datos['cuatro']+ $datos['bonos']+$datos['diezmo'];
+    $datos['totalmision']= $datos['cuatro']+ $datos['bonos']+$datos['diezmob']+$datos['retencion'];
     $datos['egresocaja']-=$datos['totalmision'];
     $datos['egresostotales']=$datos['totalmision']+$datos['egresocaja'];
     $content="
     <div class='row'>
         <div class='col-xs-12'>
-            <h3>INFORME MENSUAL DE TESORERIA IGLESIA EVANGELICA DISPULOS DE CRISTO</h3>
+            <h3>INFORME MENSUAL DE TESORERIA IGLESIA EVANGELICA DISCÍPULOS DE CRISTO DE COLOMBIA</h3>
         </div>
     </div>
     <div class='row'>
@@ -159,7 +173,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>1.</strong> INGRESO DIEZMOS EN CAJA</span>
         </div>
         <div class='col-xs-3 borde-abajo'>
-        <span>$ ".$datos['diezmo']."</span>
+        <span>$ ".number_format($datos['diezmo'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -167,15 +181,15 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>2.</strong> INGRESO OFRENDAS EN CAJA</span>
         </div>
         <div class='col-xs-3 borde-abajo'>
-            <span >$ ". $datos['ofrenda']."</span>
+            <span >$ ".number_format($datos['ofrenda'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
         <div class='col-xs-6'>
-            <span><strong>3.</strong> OTROS OFRENDAS EN CAJA</span>
+            <span><strong>3.</strong> INGRESOS DESTINACION ESPECIFICA CAJA</span>
         </div>
         <div class='col-xs-3  borde-abajo'>
-            <span>$ ".$datos['otros']."</span>
+            <span>$ ".number_format($datos['otros'],0,$d,$s)."</span>
         </div> 
     </div>
     <div class='row'>
@@ -183,7 +197,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>TOTAL INGRESO EN CAJA</strong></span>
         </div>
         <div class='col-xs-offset-3  col-xs-3 borde-abajo'>
-            <span>$ ".$totalcaja."</span>
+            <span>$ ".number_format($totalcaja,0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -191,7 +205,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>4.</strong> SALDO ANTERIOR EN CAJA </span>
         </div>
         <div class='col-xs-3 borde-abajo'>
-            <span>$ ".$datos['cajamesant']."</span>
+            <span>$ ".number_format($datos['cajamesant'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -199,7 +213,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>TOTAL DISPONIBLE EN CAJA</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
-            <span >$ ".$datos['cajadisponible']."</span>
+            <span >$ ".number_format($datos['cajadisponible'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -207,7 +221,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>TOTAL GASTO DE CAJA</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
-            <span>$ -".$datos['egresocaja']."</span>
+            <span>$ -".number_format($datos['egresocaja'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -215,7 +229,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>ENVIADO A LA MISION</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
-            <span>$ -".$datos['totalmision']."</span>
+            <span>$ -".number_format($datos['totalmision'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -223,7 +237,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>5.</strong> DIEZMO</span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span>$ ".$datos['diezmo']."</span>
+            <span>$ ".number_format($datos['diezmob'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -231,15 +245,23 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>6.</strong> 4% ENIVIADO A LA MISION</span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span>$ ".$datos['cuatro']."</span>
+            <span>$ ".number_format($datos['cuatro'],0,$d,$s)."</span>
+        </div>
+    </div>
+       <div class='row'>
+        <div class='col-xs-6'>
+            <span ><strong>7.</strong> RETENCION EN LA FUENTE</span>
+        </div>
+        <div class='col-xs-3 borde-abajo '>
+            <span>$ ".number_format($datos['retencion'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
         <div class='col-xs-6'>
-            <span ><strong>7.</strong> OFRENDAS (BONOS-OTROS)</span>
+            <span ><strong>8.</strong> OFRENDAS (BONOS-OTROS)</span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span>$ ".$datos['bonos']."</span>
+            <span>$ ".number_format($datos['bonos'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -247,7 +269,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>TOTAL GENERAL DE EGRESOSO DE CAJA (Total de gastos + total enviado a la misión)</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span>$ -".$datos['egresostotales']."</span>
+            <span>$ -".number_format($datos['egresostotales'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -255,7 +277,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>SALDO FINAL EN CAJA</strong></span>
         </div>
         <div class='col-xs-4 borde-abajo '>
-            <span><strong>$ ".$datos['cajafinal']."</strong></span>
+            <span><strong>$ ".number_format($datos['cajafinal'],0,$d,$s)."</strong></span>
         </div>
     </div>
     <div class='row'>
@@ -268,7 +290,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>1.</strong> INGRESO DIEZMOS EN BANCOS</span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span>$ ".$datos['diezmobanco']."</span>
+            <span>$ ".number_format($datos['diezmobanco'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -276,15 +298,15 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>2.</strong> INGRESO OFRENDAS EN BANCOS</span>
         </div>
         <div class='col-xs-3 borde-abajo'>
-            <span >$  ". $datos['ofrendabanco']."</span>
+            <span >$  ". number_format($datos['ofrendabanco'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
         <div class='col-xs-6'>
-            <span><strong>3.</strong> OTROS INGRESOS EN BANCOS</span>
+            <span><strong>3.</strong> INGRESOS DESTINACION ESPECIFICA BANCOS</span>
         </div>
         <div class='col-xs-3 borde-abajo'>
-            <span >$ ".$datos['otrosbanco']."</span>
+            <span >$ ".number_format($datos['otrosbanco'],0,$d,$s)."</span>
         </div> 
     </div>
     <div class='row'>
@@ -292,7 +314,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>TOTAL INGRESO EN BANCOS</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3 '>
-            <span >$ ".$totalbanco."</span>
+            <span >$ ".number_format($totalbanco,0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -300,7 +322,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>4.</strong> SALDO ANTERIOR EN BANCOS </span>
         </div>
         <div class='col-xs-3  borde-abajo'>
-            <span>$ ". $datos['bancosmesant']."</span>
+            <span>$ ".number_format($datos['bancosmesant'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -308,7 +330,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>TOTAL DISPONIBLE EN BANCOS</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3'>
-            <span>$ ".$datos['bancodisponible']."</span>
+            <span>$ ".number_format($datos['bancodisponible'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -316,7 +338,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>TOTAL GASTO EN BANCOS</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3'>
-            <span>$ -".$datos['egresobanco']."</span>
+            <span>$ -".number_format($datos['egresobanco'],0,$d,$s)."</span>
         </div>
     </div>
     <div class='row'>
@@ -324,7 +346,7 @@ if ($model->load(Yii::$app->request->post()))
             <span ><strong>SALDO FINAL EN BANCOS</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo col-xs-offset-3'>
-            <span><strong>$ ".$datos['bancofinal']."</strong></span>
+            <span><strong>$ ".number_format($datos['bancofinal'],0,$d,$s)."</strong></span>
         </div>
     </div>
     <div class='row colorbajo'>
@@ -333,7 +355,7 @@ if ($model->load(Yii::$app->request->post()))
         </div>
         
         <div class='col-xs-3 borde-abajo '>
-            <span><strong>$ ".$datos['cajafinal']."</strong></span>
+            <span><strong>$ ".number_format($datos['cajafinal'],0,$d,$s)."</strong></span>
         </div>
     </div>
     <div class='row colorbajo'>
@@ -341,7 +363,7 @@ if ($model->load(Yii::$app->request->post()))
             <span><strong>DISPONIBLE EN BANCO PARA EL MES DE : ".$nextmes."</strong></span>
         </div>
         <div class='col-xs-3 borde-abajo '>
-            <span><strong>$ ".$datos['bancofinal']."</strong></span>
+            <span><strong>$ ".number_format($datos['bancofinal'],0,$d,$s)."</strong></span>
         </div>
     </div>
     <br/>
@@ -350,12 +372,10 @@ if ($model->load(Yii::$app->request->post()))
             <span>DIEZMO PASTOR</span>
         </div>
         <div class='col-xs-6 borde-abajo '>
-            <span>$ ".$datos['diesmomes']."</span>
+            <span>$ ".number_format($datos['diesmomes'],0,$d,$s)."</span>
         </div>
     </div>
      <br/>
-     <br/>
-
     <div class='row '>
         <div class='col-xs-6 centro'>
             <span>______________________________________________</span>
@@ -405,7 +425,7 @@ public function actionCreate()
             return $pdf->render();
         } 
     }
-    $contenido='prueba';
+    $contenido='';
     return $this->render('informe', [
                        'contenido'=>$contenido,
                        'model' => $model
@@ -506,7 +526,7 @@ public function celdasarea($idarea,$contdate,$post)
         ->innerJoin('pais as pa','de.idpais=pa.id')
         ->where('cb.area='.$idarea)        
         ->andWhere("cb.fecha >='".$key['mes']."-01'")
-        ->andWhere("cb.fecha <='".$key['mes']."-30'");                  
+        ->andWhere("cb.fecha <='".$key['mes']."-31'");                  
         if($post["Informes"]['idpais']!=null){
             $banco->andWhere('pa.id='.$post["Informes"]['idpais']);    
         }
@@ -529,7 +549,7 @@ public function celdasarea($idarea,$contdate,$post)
         ->innerJoin('pais as pa','de.idpais=pa.id')
         ->where('cb.area='.$idarea)        
         ->andWhere("cb.fecha >='".$key['mes']."-01'")
-        ->andWhere("cb.fecha <='".$key['mes']."-30'");
+        ->andWhere("cb.fecha <='".$key['mes']."-31'");
         if($post["Informes"]['idpais']!=null){
             $caja->andWhere('pa.id='.$post["Informes"]['idpais']);    
         }
@@ -589,7 +609,7 @@ public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
         ->where('cb.centrocosto='.$clave)
         ->andWhere("area =".$idarea)        
         ->andWhere("fecha >='".$key['mes']."-01'")
-        ->andWhere("fecha <='".$key['mes']."-30'");
+        ->andWhere("fecha <='".$key['mes']."-31'");
         if($post["Informes"]['idpais']!=null){
             $banco->andWhere('pa.id='.$post["Informes"]['idpais']);    
         }
@@ -613,7 +633,7 @@ public function celdascentroscosto($contdate,$idarea,$vectorcentros,$post)
         ->where('cb.centrocosto='.$clave)
         ->andWhere("cb.area =".$idarea)        
         ->andWhere("cb.fecha >='".$key['mes']."-01'")
-        ->andWhere("cb.fecha <='".$key['mes']."-30'");
+        ->andWhere("cb.fecha <='".$key['mes']."-31'");
         if($post["Informes"]['idpais']!=null){
             $caja->andWhere('pa.id='.$post["Informes"]['idpais']);    
         }
@@ -655,7 +675,7 @@ public function getdiezmo($fecha,$centro)
    $query = DiezmoPastores::find()
     ->innerJoin('pastores as p','p.cedula=idpastor')   
     ->where("fecha >= ' ".$fecha."-01 '")
-    ->andWhere(" fecha <= '".$fecha."-30 '")
+    ->andWhere(" fecha <= '".$fecha."-31 '")
     ->andWhere("p.centro_costo =".$centro)
     ->asArray()->all();
          
@@ -720,7 +740,7 @@ public function mes($fecha)
     .col-xs-3 { width: 25%;}
     .borde-abajo{ border-bottom: 1px solid black;}
     span{font-size:13px;}
-    .row{margin-bottom: 8px;}
+    .row{margin-bottom: 7px;}
     .centro{ text-align: center;}
     .col-xs-offset-4 { margin-left: 33.33333333%;}
     .col-xs-9 { width: 75%;}
@@ -733,7 +753,7 @@ public function mes($fecha)
      'methods' => [
      'SetWatermarkText' => 'VERIFICADO',
      'SetWatermarkImage' =>  '../web/img/logo.png',
-     'SetHeader'=>['Disipulos de cristo'],
+     'SetHeader'=>['Iglesia Evangélica Discípulos de Cristo de Colombia'],
      'SetFooter'=>['{PAGENO}'],
    ]
  ]);
@@ -785,7 +805,7 @@ public function generarpdfarea($content)
         ->from($tabla)
         ->where('idtipoingreso='.$concepto)        
         ->andWhere("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -802,7 +822,7 @@ public function generarpdfarea($content)
         ->from($tabla)
         ->where('idconcepto='.$concepto)        
         ->andWhere("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_egreso');
         if($out==null)
@@ -818,7 +838,7 @@ public function generarpdfarea($content)
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
         ->where('idtipoingreso='.$concepto)     
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -834,7 +854,7 @@ public function generarpdfarea($content)
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
         ->where("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -850,7 +870,7 @@ public function generarpdfarea($content)
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
-        ->where("fecha <='".$fecha."-30'")
+        ->where("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -873,9 +893,9 @@ public function generarpdfarea($content)
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
         ->where("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
-        ->sum('valor_egreso');
+        ->sum('total');
         if($out==null)
         {
             return 0;
@@ -889,7 +909,7 @@ public function generarpdfarea($content)
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
         ->where("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_egreso');
         if($out==null)
@@ -903,7 +923,7 @@ public function generarpdfarea($content)
         $out = (new \yii\db\Query())
         ->select([new \yii\db\Expression('*')])
         ->from($tabla)
-        ->where("fecha <='".$fecha."-30'")
+        ->where("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_egreso');
         if($out==null)
@@ -921,7 +941,7 @@ public function generarpdfarea($content)
         ->where('idtipoingreso !='.$concepto1)
         ->andWhere('idtipoingreso !='.$concepto2)       
         ->andWhere("fecha >='".$fecha."-01'")
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -930,6 +950,38 @@ public function generarpdfarea($content)
         }
         return $out;      
     }
+
+    public function retencionfuente($fecha,$tabla,$centro_costos)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where("fecha >='".$fecha."-01'")
+        ->andWhere("fecha <='".$fecha."-31'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('subtotal');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;
+    }
+
+     public function retencionfuenteanterior($fecha,$tabla,$centro_costos)
+    {
+        $out = (new \yii\db\Query())
+        ->select([new \yii\db\Expression('*')])
+        ->from($tabla)
+        ->where("fecha <='".$fecha."-31'")
+        ->andWhere("idcentrocostos = ".$centro_costos)
+        ->sum('subtotal');
+        if($out==null)
+        {
+            return 0;
+        }
+        return $out;
+    }
+
      public function totalotrosanterior($fecha,$tabla,$centro_costos,$concepto1,$concepto2)
     {
         $out = (new \yii\db\Query())
@@ -937,7 +989,7 @@ public function generarpdfarea($content)
         ->from($tabla)
         ->where('idtipoingreso !='.$concepto1)
         ->andWhere('idtipoingreso !='.$concepto2)       
-        ->andWhere("fecha <='".$fecha."-30'")
+        ->andWhere("fecha <='".$fecha."-31'")
         ->andWhere("idcentrocostos = ".$centro_costos)
         ->sum('valor_ingreso');
         if($out==null)
@@ -945,6 +997,13 @@ public function generarpdfarea($content)
             return 0;
         }
         return $out;      
+    }
+
+        public function actionCierreMes()
+    {
+        $ReciboCaja = ReciboCaja::updateAll(['bloqueo'=>1]);
+        $ComprobanteEgreso = ComprobanteEgreso::updateAll(['bloqueo'=>1]);
+       
     }
 
     public function cajamesant($fecha,$centrocostos)
@@ -955,7 +1014,9 @@ public function generarpdfarea($content)
         $egresoscaja=$this->egresosmesanterior($fecha,'recibo_caja_caja',$centrocostos);
         $egresoscomcaja=$this->egresosmesanterior($fecha,'comprobante_caja',$centrocostos);
         $ingresoco=$this->ingresoscomprobanteanterior($fecha,'comprobante_caja',$centrocostos);
-        $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja;
+        $retncion=$this->retencionfuenteanterior($fecha,'comprobante_caja',$centrocostos);
+        
+        $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja+$retncion;
         return $r;
     }
 
@@ -967,7 +1028,8 @@ public function generarpdfarea($content)
         $egresoscaja=$this->egresosmesanterior($fecha,'recibo_caja_banco',$centrocostos);
         $egresoscomcaja=$this->egresosmesanterior($fecha,'comprobante_banco',$centrocostos);
         $ingresoco=$this->ingresoscomprobanteanterior($fecha,'comprobante_banco',$centrocostos);
-        $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja;
+        $retncion=$this->retencionfuenteanterior($fecha,'comprobante_banco',$centrocostos);
+        $r=$diezmo+$ofrenda+$otros+$ingresoco-$egresoscaja-$egresoscomcaja+$retncion;
         return $r;
 
     }
@@ -1002,6 +1064,9 @@ public function generarpdfarea($content)
      * @return Terceros the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
+
+
+
     protected function findModel($id)
     {
         if (($model = Terceros::findOne($id)) !== null) {

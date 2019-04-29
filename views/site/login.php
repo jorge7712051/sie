@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
              <?php ActiveForm::end(); ?>
 
-               <?= Html::a('¿Olvidaste tu contraseña?', ['/site/recoverpass'], ['class'=>'centro-link']) ?>
+               <?= Html::a('¿Olvidaste tu contraseña?', ['recoverpass'], ['class'=>'centro-link']) ?>
         </div>
 
        

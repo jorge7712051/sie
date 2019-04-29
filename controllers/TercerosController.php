@@ -29,7 +29,7 @@ class TercerosController extends Controller
                 'rules' => [
                     [
                         //El administrador tiene permisos sobre las siguientes acciones
-                        'actions' => ['create', 'view','update','delete','index','validate','terceros-list'],
+                        'actions' => ['create', 'view','update','delete','index','validate','terceros-list','busqueda'],
                         //Esta propiedad establece que tiene permisos
                         'allow' => true,
                         //Usuarios autenticados, el signo ? es para invitados
@@ -43,7 +43,7 @@ class TercerosController extends Controller
                     ],
                     [
                        //Los usuarios simples tienen permisos sobre las siguientes acciones
-                       'actions' => ['create','view','update','index','terceros-list','validate'],
+                       'actions' => ['create','view','update','index','terceros-list','validate','busqueda','delete'],
                        //Esta propiedad establece que tiene permisos
                        'allow' => true,
                        //Usuarios autenticados, el signo ? es para invitados
@@ -219,6 +219,17 @@ class TercerosController extends Controller
         ->andWhere('t.idanulo=0')        
         ->all();
        return \yii\helpers\Json::encode($out);
+    }
+
+    public function actionBusqueda($id=NULL)
+    {
+        $request = Yii::$app->request; 
+        $id = $request->post('id');  
+        $id=str_replace('.', '', $id);
+        $datos = Terceros::find()
+        ->where('identificacion=:id', [':id' => $id])
+        ->one();
+        return \yii\helpers\Json::encode($datos);
     }
     /**
      * Finds the Terceros model based on its primary key value.

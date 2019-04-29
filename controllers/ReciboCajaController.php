@@ -34,7 +34,7 @@ class ReciboCajaController extends Controller
                 'rules' => [
                     [
                         //El administrador tiene permisos sobre las siguientes acciones
-                        'actions' => ['create', 'view','update','index','delete','alta','baja'],
+                        'actions' => ['create', 'view','update','index','delete','alta','baja','desbloqueo'],
                         //Esta propiedad establece que tiene permisos
                         'allow' => true,
                         //Usuarios autenticados, el signo ? es para invitados
@@ -96,11 +96,17 @@ class ReciboCajaController extends Controller
     public function actionIndex()
     {
         $searchModel = new ReciboCajaSearch();
+        $model = new ReciboCaja();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProviderbanco= $searchModel->searchrecibobanco(Yii::$app->request->queryParams);
+        $dataProvidercaja= $searchModel->searchrecibocaja(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'dataProviderBanco'=> $dataProviderbanco,
+            'dataProviderCaja' => $dataProvidercaja,
+            'model'=>$model
         ]);
     }
 
@@ -128,6 +134,31 @@ class ReciboCajaController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+
+    public function actionDesbloqueo()
+    {
+        $model = new ReciboCaja();  
+        $model->scenario = 'desbloqueo'; 
+        if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax)
+        {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+        if ($model->load(Yii::$app->request->post()))
+        {
+            $condition =    ['and',
+                            ['>=', 'fecha', $model->fecha.'-01'],
+                            ['<=', 'fecha', $model->fecha.'-31'],
+                            ['=', 'idcentrocostos', $model->idcentrocostos],
+                        ];
+            ReciboCaja::updateAll(['bloqueo' => $model->bloqueo], $condition);
+             return $this->redirect(['recibo-caja/index']);
+        }   
+
+        
+    }
+
+
     public function actionCreate()
     {
         $model = new ReciboCaja();
@@ -193,7 +224,7 @@ class ReciboCajaController extends Controller
                 $model->save(); 
                 if ($model->upload())
                  { 
-                    unlink($directorio);
+                    //unlink($directorio);
                    return $this->redirect(['view', 'id' => $model->idrecibo]);
                  }                  
             }
@@ -210,8 +241,12 @@ class ReciboCajaController extends Controller
     {   
         $model = $this->findModel($id);
         $model->alta=1;
-        $model->save();
-        $mensaje='<div class="alert alert-success" role="alert"><h4 class="alert-heading">¡BIEN HECHO!</h4><p>Loa valores coinciden el recibo de caja sera tenido en cuenta para el informe mensual, por favor no cambies o adiciones mas datos.</p><hr><p class="mb-0">Comprobante  tenido en cuenta .</p></div>'; 
+        if ($model->save(false))
+        {
+          $mensaje='<div class="alert alert-success" role="alert"><h4 class="alert-heading">¡BIEN HECHO!</h4><p>Loa valores coinciden el recibo de caja sera tenido en cuenta para el informe mensual, por favor no cambies o adiciones mas datos.</p><hr><p class="mb-0">Comprobante  tenido en cuenta .</p></div>';   
+        }
+       else $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p> en interno</p></div>';
+       
         return $mensaje;
     }
 
@@ -219,8 +254,12 @@ class ReciboCajaController extends Controller
     {
        $model = $this->findModel($id);
         $model->alta=0;
-        $model->save();
-        $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p>Los valores del recibo de caja y la suma de los valores de los adjuntos no coinciden o no son iguales, para que el recibo de caja sea tenido en cuenta, pueda subir al sistema y se vea reflejado en el informe mensual ajuste los valores hasta que sean iguales.</p><hr><p class="mb-0">Comprobante no tenido en cuenta .</p></div>'; 
+        if ($model->save(false))
+        {
+          $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p>Los valores del recibo de caja y la suma de los valores de los adjuntos no coinciden o no son iguales, para que el recibo de caja sea tenido en cuenta, pueda subir al sistema y se vea reflejado en el informe mensual ajuste los valores hasta que sean iguales.</p><hr><p class="mb-0">Comprobante no tenido en cuenta .</p></div>';   
+        }
+       else $mensaje='<div class="alert alert-danger" role="alert"><h4 class="alert-heading">¡ERROR!</h4><p> en interno</p></div>';
+       
         return $mensaje;
     }
 
@@ -253,7 +292,7 @@ class ReciboCajaController extends Controller
         $detalle = DetalleReciboCaja::find()->where("idrecibocaja=:id", [":id" =>$id])->all();
         $this->Borrar($detalle);
         DetalleReciboCaja::deleteAll("idrecibocaja=:id", [":id" =>$id]);
-        unlink($directorio);
+        //unlink($directorio);
         $this->findModel($id)->delete();
         return $this->redirect(['index']);
     }

@@ -31,7 +31,9 @@ use yii\web\View;
     'options' => ['placeholder' => 'Digite la identificacion ...','autocomplete'=>"off"],
     'scrollable' => true,
     'pluginOptions' => ['highlight'=>true,'minLength' => 2,'hint'=>false],
-    'pluginEvents'=> ['keyup' => 'function() { format(this);}'],
+    'pluginEvents'=> ['keyup' => 'function() { format(this);}',
+                       'typeahead:close' => 'function() { format(this);}',
+                    ],
     'dataset' => [
        [
         'display' => 'identificacion',

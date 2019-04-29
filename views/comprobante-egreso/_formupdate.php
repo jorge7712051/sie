@@ -66,7 +66,7 @@ use yii\helpers\Url;
                                 'autoclose'=>true,
                                 'format' => 'yyyy-mm-dd',
                                 'startDate'=>'yyyy-mm-1',
-                                'endDate'=>'yyyy-mm-30',
+                                'endDate'=>'yyyy-mm-31',
                                     ]
         ]);?>
        

@@ -45,19 +45,19 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [[ 'valor','idtercero', 'idconcepto', 'adjunto', 'subtotal', 'total','contraparte','idarea','idcentrocosto'], 'required'],
+            [[ 'valor','idtercero', 'idconcepto', 'adjunto', 'subtotal', 'total','contraparte','idarea','idcentrocosto','concepto'], 'required'],
             [['idtercero', 'idcomprobanteegreso', 'idconcepto','idarea','idcentrocosto'], 'integer'],
             [['valor', 'subtotal', 'total'], 'number'],
             [['adjobligatorio'],'required','on'=>'create'],
             [['fechacreacion'], 'safe'],
-            [['adjunto'], 'string', 'max' => 400],
+            [['adjunto','concepto'], 'string', 'max' => 400],
             [['comprobante'], 'required', 'when' => function ($model) {
                   return $model->adjobligatorio == 0;
             }, 'whenClient' => "function (attribute, value) {
                 return $('#detallescomprobanteegreso-adjobligatorio').val() == '0';
      }",'on' =>'create'],
             [['comprobante'],'file',//Error
-                                'maxSize' => 2048*1024*1, //1 MB
+                                'maxSize' => 4096*1024*1, //1 MB
                                 'tooBig' => 'El tamaño máximo permitido es 2MB', //Error
                                 'extensions' => 'pdf, png, jpg',
                                 'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
@@ -78,12 +78,13 @@ class DetallesComprobanteEgreso extends \yii\db\ActiveRecord
             'idtercero' => 'Tercero ',
             'valor' => 'Valor Base',
             'idcomprobanteegreso' => 'Comprobante Egreso',
-            'idconcepto' => 'Concepto',
+            'idconcepto' => 'Asiento contable',
             'fechacreacion' => 'Fechacreacion',
             'adjunto' => 'Adjunto',
             'subtotal' => 'Retención',
             'total' => 'Total',
             'idarea'=>'Area',
+            'concepto'=>'Concepto',
             'idcentrocosto'=>'centro costo',
             'cedulatercero'=>'Identificacion Tercero'
         ];

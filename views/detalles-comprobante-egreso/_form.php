@@ -33,7 +33,9 @@ use yii\web\View;
     'options' => ['placeholder' => 'Digite la identificacion ...','autocomplete'=>"off"],
     'scrollable' => true,
     'pluginOptions' => ['highlight'=>true,'minLength' => 2,'hint'=>false],
-    'pluginEvents'=> ['keyup' => 'function() { format(this);}'],
+    'pluginEvents'=> ['keyup' => 'function() { format(this);}',
+                    'typeahead:close' => 'function() { format(this);}',
+    ],
     'dataset' => [
        [
         'display' => 'identificacion',
@@ -79,6 +81,8 @@ use yii\web\View;
     <?= $form->field($model, 'adjobligatorio')->hiddenInput(['readonly'=> true])->label(false); ?>
 
     <?= $form->field($model, 'idconcepto')->dropDownList(ArrayHelper::map(Concepto::find()->where('idanulo=0')->all(), 'idconcepto', 'concepto'),array( 'prompt'=>'Seleccione...')); ?>
+
+     <?= $form->field($model, 'concepto')->textInput() ?>    
 
     <?= $form->field($model, 'valor')->widget(NumberControl::classname(), [
                                 'displayOptions' =>  [

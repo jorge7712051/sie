@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\ArrayHelper;
+use app\models\Ciudades;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CentroCostos */
@@ -30,6 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'idcentrocostos',
             'centrocostos',
+            [
+                'attribute'=>'idciudad',
+                'value'=>function($model){
+                    $ciudades = Ciudades::findOne($model->idciudad);
+                    return $ciudades->ciudad;
+                }
+
+            ],
           
         ],
     ]) ?>

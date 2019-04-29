@@ -146,13 +146,13 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
        $hoy = date("Y-m"); 
        if (ComprobanteEgreso::findOne(['idcomprobante'=>$id,'idcentrocostos'=>$cc,'bloqueo'=>'0']))
        {
-        if(ComprobanteEgreso::Seguridadfecha($hoy))
-        {
+        
             return true;   
-        }
+       
        
        } 
-       else {
+       else 
+       {
             return false;
        }
     }
@@ -162,10 +162,10 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
        $hoy = date("Y-m"); 
        if (ReciboCaja::findOne(['idrecibo'=>$id,'idcentrocostos'=>$cc,'bloqueo'=>'0']))
        {
-        if(ReciboCaja::Seguridadfecha($hoy))
-        {
+        
+        
             return true;   
-        }
+        
        
        } 
        else {

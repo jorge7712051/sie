@@ -93,6 +93,7 @@ class DetalleReciboCajaController extends Controller
     {
         $searchModel = new DetalleReciboCajaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -150,7 +151,7 @@ class DetalleReciboCajaController extends Controller
     {
         $model = $this->findModel($id);
         $model->contraparte=$this->getcontraparte($id);
-        $model->cedulatercero=$this->gettercero( $model->idtercero);
+        $model->nombre=$this->gettercero( $model->idtercero);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['recibo-caja/view','id' => $model->idrecibocaja]);

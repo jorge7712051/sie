@@ -4,11 +4,11 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DetalleReciboCaja */
-
+/*
 $this->title = 'Update Detalle Recibo Caja: ' . $model->iddetalle_recibo;
 $this->params['breadcrumbs'][] = ['label' => 'Detalle Recibo Cajas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->iddetalle_recibo, 'url' => ['view', 'id' => $model->iddetalle_recibo]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Update';*/
 ?>
 <div class="detalle-recibo-caja-update">
 

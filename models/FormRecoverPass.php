@@ -1,11 +1,12 @@
 <?php
- 
+
  namespace app\models;
  
  use Yii;
- use yii\base\model;
  
- class FormRecoverPass extends model{
+ 
+ class FormRecoverPass extends \yii\db\ActiveRecord
+ {
  
      public $email;
      

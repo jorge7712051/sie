@@ -85,6 +85,7 @@ class DetallesComprobanteEgresoSearch extends DetallesComprobanteEgreso
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => false,
         ]);
 
         //$this->load($params);

@@ -7,6 +7,7 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ComprobanteEgreso;
 use app\models\ComprobanteBanco;
+use app\models\ComprobanteCaja;
 use yii\db\ActiveQuery;
 use yii\db\Query;
 
@@ -19,14 +20,16 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
      * {@inheritdoc}
      */
     
-    public $fecha_informe;
+    public $fecha_caja;
+    public $fecha_banco;
     public $idiglesia;
+    public $id_anterior;
 
     public function rules()
     {
         return [
             [['idcomprobante', 'bloqueo', 'idcentrocostos', 'idanulo'], 'integer'],
-            [['fecha_creacion', 'fecha', 'adjunto', 'codigo','alta','anulado','fecha_informe'], 'safe'],
+            [['fecha_creacion', 'fecha', 'adjunto', 'codigo','alta','anulado','fecha_banco','fecha_caja'], 'safe'],
             [['valor'], 'number'],
         ];
     }
@@ -112,22 +115,24 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         {
             if($session->get('rol')==1)
             {
-                $query = ComprobanteBanco::find()->select(
-                    ['fecha_informe'=>'fecha',
+                $query = ComprobanteBanco::find()->alias('cb')->select(
+                    ['fecha_banco'=>'fecha',
                      'idcomprobante'=>'idcomprobante', 
                      'idiglesia'=>'idcentrocostos',
-                     'idtercero'=>'idtercero',
+                     'idtercero'=>'te.identificacion',
                      'valor_total'=>'valor_d',
                      'idconcepto'=>'idconcepto',
+                     'concepto'=>'concepto',
+                     'cuenta'=>'cuenta',
                      'area'=>'area',
                      'centrocosto'=>'centrocosto',
                      'retencion'=>'subtotal',
-                     'subtotal'=>'total'
-
-
-
-                    ]);
-
+                     'subtotal'=>'total',
+                     'codigo'=>'codigo',
+                     'id_anterior'=>'idanteriror',
+                ])
+              ->innerJoin('terceros as te','cb.idtercero=te.idtercero');
+            
 
             }
             else{
@@ -141,6 +146,7 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
 
         $dataProviderbanco = new ActiveDataProvider([
             'query' => $query,
+             'pagination' => false,
         ]);
 
         $this->load($params);
@@ -152,8 +158,8 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         }
 
         // grid filtering conditions
-        $query->andFilterWhere(['>=', 'fecha', $this->fecha_informe."-01"]);
-         $query->andFilterWhere(['<=', 'fecha', $this->fecha_informe."-30"]);
+        $query->andFilterWhere(['>=', 'fecha', $this->fecha_banco."-01"]);
+         $query->andFilterWhere(['<=', 'fecha', $this->fecha_banco."-31"]);
 
         
 /*
@@ -164,5 +170,72 @@ class ComprobanteEgresoSearch extends ComprobanteEgreso
         }
 */
         return $dataProviderbanco;
+    }
+
+      public function searchcomprobantecaja($params)
+    {
+        $session = Yii::$app->session;
+        if ($session->isActive)
+        {
+            if($session->get('rol')==1)
+            {
+                $query = ComprobanteCaja::find()->alias('cb')->select(
+                    ['fecha_caja'=>'fecha',
+                     'idcomprobante'=>'idcomprobante', 
+                     'idiglesia'=>'idcentrocostos',
+                     'idtercero'=>'te.identificacion',
+                     'valor_total'=>'valor_d',
+                     'idconcepto'=>'idconcepto',
+                     'concepto'=>'concepto',
+                     'asiento_contable'=>'asiento_contable',
+                     'cuenta'=>'cuenta',
+                     'area'=>'area',
+                     'centrocosto'=>'centrocosto',
+                     'retencion'=>'subtotal',
+                     'subtotal'=>'total',
+                     'codigo'=>'codigo',
+                    'id_anterior'=>'idanteriror',
+               ])
+               ->innerJoin('terceros as te','cb.idtercero=te.idtercero');
+
+
+            }
+            else{
+                $query = ComprobanteBanco::find();
+                $query->where('idcentrocostos='.$session->get('centrocostos'));
+                $query->orderBy(['fecha' => SORT_ASC]) ;
+                $query->limit(1);
+
+            }
+           
+        }
+        // add conditions that should always apply here
+
+        $dataProvidercaja = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => false,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvidercaja;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere(['>=', 'fecha', $this->fecha_caja."-01"]);
+         $query->andFilterWhere(['<=', 'fecha', $this->fecha_caja."-31"]);
+
+        
+/*
+        if(!empty($this->fecha) && strpos($this->fecha, '-') !== false) {
+            list($start_date, $end_date) = explode(' - ', $this->fecha);
+            $query->andFilterWhere(['>=', 'fecha', $start_date]);
+            $query->andFilterWhere(['<=', 'fecha', $end_date]);
+        }
+*/
+        return $dataProvidercaja;
     }
 }

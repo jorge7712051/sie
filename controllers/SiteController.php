@@ -27,7 +27,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['login','contact', 'about','logout','recoverpass','resetpass'],
+                'only' => ['login','contact', 'about','logout','recoverpass','resetpass','index'],
                 'rules' => [
                      [
                         //El administrador tiene permisos sobre las siguientes acciones
@@ -52,7 +52,7 @@ class SiteController extends Controller
                    
                     [
                        //Los usuarios simples tienen permisos sobre las siguientes acciones
-                       'actions' => ['logout', 'about'],
+                       'actions' => ['logout', 'about','index','login'],
                        //Esta propiedad establece que tiene permisos
                        'allow' => true,
                        //Usuarios autenticados, el signo ? es para invitados
@@ -128,13 +128,11 @@ class SiteController extends Controller
 
      public function actionLogin()
     {
-       
-        
-
+      if(Yii::$app->user->isGuest)
+      {
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             $cc=User::createSesion(Yii::$app->user->identity->id);
-
             $session = Yii::$app->session;
             $session->set('centrocostos', $cc->centrocosto);
             $session->set('rol', $cc->role);
@@ -146,6 +144,8 @@ class SiteController extends Controller
         return $this->render('login', [
             'model' => $model,
         ]);
+      }
+       return $this->render('index');
     }
     /**
      * Displays contact page.

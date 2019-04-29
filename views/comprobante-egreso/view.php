@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //'codigo',
         ],
     ]) ?>
-
+    
      <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'showFooter'=>TRUE,
@@ -78,13 +78,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'attribute'=>'valor',
+                'attribute'=>'total',
                 'footerOptions' => ['class' => 'valor-total'],
                 'value'=>function($model){  
                             Yii::$app->formatter->locale = 'et-EE';                 
-                            return Yii::$app->formatter->asCurrency($model->valor,'USD'); 
+                            return Yii::$app->formatter->asCurrency($model->total,'USD'); 
                         },
-                'footer' => ComprobanteEgreso::getTotal($dataProvider->models, 'valor')               
+                'footer' => ComprobanteEgreso::getTotal($dataProvider->models, 'total')               
             ],            
             [
                 'attribute'=>'idconcepto',
@@ -98,20 +98,55 @@ $this->params['breadcrumbs'][] = $this->title;
                 'header' => 'Acciones',
                 'headerOptions' => ['style' => 'color:#337ab7'],
                 'template' => '{update}{delete}',
-                'buttons' => [
-                        'update' => function ($url, $model) {
-                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
-                            'title' => 'Actualizar',
-                            ]);
-                        },
-                        'delete' => function ($url, $model) {
-                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                  'buttons' => [
+          'update' => function ($url, $model,$key) {
+              $session = Yii::$app->session;
+                if($session->get('rol')==1)
+                    {
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                          'title' => 'Actualizar',
+                        ]);
+                    }
+                    $hoy = date("Y-m");
+                    $fecha1=explode("-", $model->fechacreacion);
+                    $a =$fecha1[0]."-".$fecha1[1];
+                    $modelo=ComprobanteEgreso::find()->where(['idcomprobante' => $model->idcomprobanteegreso])->one();
+                    if($modelo->bloqueo=='0'  )
+                    {
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                          'title' => 'Actualizar',
+                        ]);
+                    }
+                    return false;
+                
+                
+            },
+            'delete' => function ($url, $model,$key) {
+            $session = Yii::$app->session;
+            if($session->get('rol')==1)
+            {
+                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                             'title' => 'Borrar',
-                            'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
-                            ]);
-                        }
+                             'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
+                ]);
+            }
 
-                ],
+            $hoy = date("Y-m");
+            $fecha1=explode("-", $model->fechacreacion);
+            $a =$fecha1[0]."-".$fecha1[1]; 
+            $modelo=ComprobanteEgreso::find()->where(['idcomprobante' => $model->idcomprobanteegreso])->one(); 
+            if($modelo->bloqueo=='0' )
+                {
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                            'title' => 'Borrar',
+                             'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
+                    ]);
+                }
+                return false;
+               
+            }
+
+          ],
                 'urlCreator' => function ($action, $model, $key, $index) {
                     if ($action === 'update') {
                     $url =Url::to(['detalles-comprobante-egreso/update', 'id' => $model->iddetalle]);

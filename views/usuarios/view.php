@@ -8,7 +8,7 @@ use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
 /* @var $model app\models\Usuarios */
 
-$this->title = $model->id;
+$this->title = $model->nombrecompleto;
 $this->params['breadcrumbs'][] = ['label' => 'Usuarios', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

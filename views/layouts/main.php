@@ -19,6 +19,7 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="<?php echo Yii::$app->getHomeUrl(); ?>/favicon.png" type="image/x-icon" />
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
@@ -57,7 +58,7 @@ if ($session->isActive){
             'items'=>[
                 ['label' => 'Pastores', 'url' => ['/pastores/index']],
                 ['label' => 'Terceros', 'url' => ['/terceros/index']],
-                ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
+                ['label' => 'Diezmos Pastores', 'url' => ['/diezmo-pastores/index']],
                     ],
             ],
             ['label'=>'<span class="glyphicon glyphicon-globe"></span> Datos Geograficos',
@@ -78,6 +79,7 @@ if ($session->isActive){
                  ['label' => 'Iglesias', 'url' => ['/centro-costos/index']],
                  ['label' => 'Tipos de Ingresos', 'url' => ['/tipo-ingreso/index']],
                  ['label' => 'Usuarios', 'url' => ['/usuarios/index']],
+                 ['label' => 'Membresias', 'url' => ['/membresia/index']], 
                  ['label' => 'Tipos de identificaicon', 'url' => ['/tipo-id/index']], 
                         ],
              ],
@@ -135,7 +137,8 @@ if ($session->isActive){
             ['label' => 'Adcionales',
             'items' =>  [
                 ['label' => 'Teceros', 'url' => ['/terceros/index']],
-                ['label' => 'Diezmos', 'url' => ['/diezmo-pastores/index']],
+                ['label' => 'Membresias', 'url' => ['/membresia/index']], 
+                ['label' => 'Diezmos Pastores', 'url' => ['/diezmo-pastores/index']],
                         ],
              ],
             Yii::$app->user->isGuest ? (
@@ -172,9 +175,9 @@ if ($session->isActive){
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Disipulos de Cristo <?= date('Y') ?></p>
+        <p class="pull-left">&copy; </p> Iglesia Evangélica Discípulos de Cristo de Colombia
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        <p class="pull-right"><?=  date('Y')?></p>
     </div>
 </footer>
 <?php

@@ -190,7 +190,7 @@ class DetallesComprobanteEgresoController extends Controller
                 $model->save(); 
                 if ($model->upload())
                  { 
-                    unlink($directorio);
+                    //unlink($directorio);
                    return $this->redirect(['comprobante-egreso/view','id' => $model->idcomprobanteegreso]);
                  }                  
             }
@@ -220,7 +220,7 @@ class DetallesComprobanteEgresoController extends Controller
         $directorio= $model->adjunto  ;
         if($directorio!='archivos/sinarchivo.png')
         {
-             unlink($directorio);
+             //unlink($directorio);
          }
         Bancos::deleteAll("idcomprobante=:id", [":id" => $id]);
         Caja::deleteAll("idcomprobante=:id", [":id" => $id]);

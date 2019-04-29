@@ -29,7 +29,7 @@ class CentroCostos extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['centrocostos'], 'required'],
+            [['centrocostos','idciudad'], 'required'],
             [['idanulo'], 'integer'],
             [['centrocostos'], 'string', 'max' => 200],
         ];
@@ -44,6 +44,7 @@ class CentroCostos extends \yii\db\ActiveRecord
             'idcentrocostos' => 'Id',
             'centrocostos' => 'Nombre Iglesia',
             'idanulo' => 'Activo',
+            'idciudad'=>'Ciudad'
         ];
     }
 

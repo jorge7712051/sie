@@ -51,13 +51,14 @@ class ComprobanteEgreso extends \yii\db\ActiveRecord
             [['codigo'], 'string', 'max' => 5],
             [['idcomprobante'], 'unique','on'=>'create'],
             [['comprobante'], 'required', 'on' =>'create'],
+            [['bloqueo','idcentrocostos','fecha'], 'required', 'on' =>'desbloqueo'],
             [['comprobante'],'file',//Error
-                                'maxSize' => 2048*1024*1, //1 MB
+                                'maxSize' => 4096*1024*1, //4 MB
                                 'tooBig' => 'El tamaño máximo permitido es 2MB', //Error
                                 'extensions' => 'pdf, png, jpg',
                                 'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
             ],
-            [['idcomprobante'], 'match','pattern'=>"/^[0-9]{6}$/",'message' => 'Numero de comprobant erroneo'],
+            [['idcomprobante'], 'match','pattern'=>"/^[0-9]{5,6}$/",'message' => 'Numero de comprobant erroneo'],
             [['idcentrocostos'], 'exist', 'skipOnError' => true, 'targetClass' => CentroCostos::className(), 'targetAttribute' => ['idcentrocostos' => 'idcentrocostos']],
         ];
     }

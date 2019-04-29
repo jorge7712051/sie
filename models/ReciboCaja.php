@@ -46,6 +46,7 @@ class ReciboCaja extends \yii\db\ActiveRecord
             [['comprobante'], 'required', 'on' =>'create'],
             [['fecha'], 'validar_fecha', 'on' => 'update'],
             [['idrecibo'], 'validar_id', 'on'=>'update'],
+            [['bloqueo','idcentrocostos','fecha'], 'required', 'on' =>'desbloqueo'],
             [['fecha', 'fecha_creacion'], 'safe'],
             [['valor'], 'number'],
             [['concepto'], 'string', 'max' => 50],
@@ -54,12 +55,12 @@ class ReciboCaja extends \yii\db\ActiveRecord
             [['idrecibo'], 'unique'],
             [['comprobante'], 'required', 'on' =>'create'],
             [['comprobante'],'file',//Error
-                                'maxSize' => 2048*1024*1, //1 MB
+                                'maxSize' => 4096*1024*1, //1 MB
                                 'tooBig' => 'El tamaño máximo permitido es 2MB', //Error
                                 'extensions' => 'pdf, png, jpg',
                                 'wrongExtension' => 'El archivo {file} no contiene una extensión permitida {extensions}', //Error
             ],
-             [['idrecibo'], 'match','pattern'=>"/^[0-9]{6}$/",'message' => 'Numero de recibo de caja invalido '],
+             [['idrecibo'], 'match','pattern'=>"/^[0-9]{5,6}$/",'message' => 'Numero de recibo de caja invalido '],
              [['idcentrocostos'], 'exist', 'skipOnError' => true, 'targetClass' => CentroCostos::className(), 'targetAttribute' => ['idcentrocostos' => 'idcentrocostos']],
         ];
     }

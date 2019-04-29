@@ -115,15 +115,51 @@ $this->params['breadcrumbs'][] = $this->title;
           'headerOptions' => ['style' => 'color:#337ab7'],
           'template' => '{update}{delete}',
           'buttons' => [
-          'update' => function ($url, $model) {
-                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+          'update' => function ($url, $model,$key) {
+              $session = Yii::$app->session;
+                if($session->get('rol')==1)
+                    {
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
                           'title' => 'Actualizar',
-                ]);
+                        ]);
+                    }
+                    $hoy = date("Y-m");
+                    $fecha1=explode("-", $model->fechacreacion);
+                    $a =$fecha1[0]."-".$fecha1[1];   
+                    $modelo=ReciboCaja::find()->where(['idrecibo' => $model->idrecibocaja])->one(); 
+                    if($modelo->bloqueo=='0' )
+                    {
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                          'title' => 'Actualizar',
+                        ]);
+                    }
+                    return false;
+                
+                
             },
-            'delete' => function ($url, $model) {
+            'delete' => function ($url, $model,$key) {
+            $session = Yii::$app->session;
+            if($session->get('rol')==1)
+            {
                 return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                             'title' => 'Borrar',
+                             'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
                 ]);
+            }
+
+            $hoy = date("Y-m");
+            $fecha1=explode("-", $model->fechacreacion);
+            $a =$fecha1[0]."-".$fecha1[1];
+            $modelo=ReciboCaja::find()->where(['idrecibo' => $model->idrecibocaja])->one(); 
+            if($modelo->bloqueo=='0' )
+                {
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                            'title' => 'Borrar',
+                             'data-confirm'=>'¿Está seguro de eliminar esta elemento?',
+                    ]);
+                }
+                return false;
+               
             }
 
           ],
@@ -131,11 +167,13 @@ $this->params['breadcrumbs'][] = $this->title;
            
 
             if ($action === 'update') {
-                $url =Url::base().'/detalle-recibo-caja/update?id='.$model->iddetalle_recibo;
+                $url =Url::to(['detalle-recibo-caja/update', 'id' => $model->iddetalle_recibo]);
+                Url::remember();
                 return $url;
             }
             if ($action === 'delete') {
-                $url ='/detalle-recibo-caja/delete?id='.$model->iddetalle_recibo;
+                
+                $url =Url::to(['detalle-recibo-caja/delete', 'id' => $model->iddetalle_recibo]);
                 Url::remember();
 
                 return $url;

@@ -19,9 +19,13 @@ class ComprobanteBanco extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
 
-    public $fecha_informe;
+    public $fecha_banco;
     public $idiglesia;
     public $valor_total;
+    public $retencion;
+    public $llave;
+    public $id_anterior;
+    public $contraparte='banco';
 
     public static function tableName()
     {
@@ -34,9 +38,9 @@ class ComprobanteBanco extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idcomprobante', 'idcentrocostos','idtercero','valor_d','idconcepto','area','centrocosto','subtotal','total'], 'integer'],
+            [['idcomprobante', 'idcentrocostos','idtercero','valor_d','idconcepto','area','centrocosto','subtotal','total','id_anterior'], 'integer'],
             [['codigo',], 'string', 'max' => 5],
-            [['fecha','fecha_informe;'], 'safe'],
+            [['fecha','fecha_banco'], 'safe'],
             
         ];
     }
@@ -51,6 +55,13 @@ class ComprobanteBanco extends \yii\db\ActiveRecord
             'idcentrocostos' => 'Centro Costos',
             'fecha' => 'Fecha',
         ];
+    }
+
+      public static function primaryKey()
+    {
+        
+        
+        return ["llave"];
     }
 
     
